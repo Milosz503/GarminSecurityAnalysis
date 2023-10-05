@@ -19,6 +19,8 @@ The generated app bytecode has to be signed by the developer.
 The signing algorithm uses SHA1 hash of the bytecode that is signed with a private RSA key.
 The key is 4096 long, which is more than recommended.
 
+For the signing, conventions described in PKCS #1 v2.2 are used. 
+
 SHA-1 is no longer considered secure against well-funded opponents. NIST formally deprecated use of this hash function in 2011. In 2020 there was a paper published demonstrating a chosen-prefix collision attack. It still doesn't offer a viable solution to find a collision to a given hash for a chosen prefix. However, the function has been already broken and in the upcoming years new attacks might be discovered. 
 
 ### Compiler
@@ -30,19 +32,88 @@ During the compilation, the code is translated to mid-level intermediate represe
 ### Modifying the executable
 In order to test the security of the virtual machine, it is useful to be able to edit the executable. However, after changing the bytecode, it is necessary to sign the executable again. After analysis of _monkeybrains.jar_ file, I created a kotlin script that signs the app again.
 
+
+## ConnectIQ store
+
+### Analysis from the users' perspective
+Application allows the users to download third party apps to the watch.
+The user can select an app to install it. 
+Notes:
+- the watch is not required to be connected to the internet
+- if the watch is not connected to the phone, the store shows that the installation is queued.
+
+Based on that, it seems that:
+- the phone downloads the app
+- sends it to the watch via BT
+
+### Decompilation of the app
+
+I decompiled the app with JADX. The app is obfuscated.   
+
+I couldn't find any code that would be responsible for checking the certificate of the downloaded app. I was looking for keywords such as the library that was used during a build process, SHA1, RSA.
+
+Probably there is not much of a point to check the certificate on the phone, assuming that the watch is doing it.
+
+I didn't manage to find the code responsible for downloading the app.
+
+### Trying men-in-the-middle attack
+- emulator does not have access to BT
+- linux hotspot + mitmproxy - problem with certificates. Two options to solve the problem:
+  - Rooted phone
+  - Modify the app
+
+### Trying to modify the app
+The minimum supported Android version is 7. Those versions require root access to add certificates supported by applications. Another option is to modify the app to accept user added certificates.
+
+#### Attempt 1 - Android Unpinner
+Use Android Unpinner - https://github.com/mitmproxy/android-unpinner
+
+The app starts when connected to mitmproxy. However, when trying to log in, it goes back to the welcome screen. 
+**Not possible to log in**.
+
+
+#### Attempt 2 — manually modify the apk and sign again
+Using Apktool(https://apktool.org/) to unpack the app, modify, and pack again, align zip file and sign with a debug key.
+
+After installing the app, there are some errors with missing resources. I did not investigate it further.
+
+#### Attempt 3 - just resign the app
+Just resigning the app with a debug key. The app starts, but when trying to log in it seems to work the same as the app from the attempt #1.
+
+### Analyzing mitmproxy traffic
+Based on the limited amount of traffic that went through mitmproxy:
+
+Used domains:
+- `sso.garmin.com` - Qualys SSl Labs analysis: **grade B**
+  - server supports **TLS 1.1**
+- `diauth.garmin.com` - Qualys SSl Labs analysis: **grade A**
+
+![alt text](images/mitmproxy%20unpinner.png)
+
+## TODO
 ### Connect IQ apps TODO
 - analyze native calls security
 - analyze Monkey C security such as:
   - bound checking
   - overflows
-  - pointers/references, 
+  - pointers/references,
   - memory management
+
+Things to analyze:
+- simulator
+- ConnectIQ store
+  - decompile
+  - sniff
+    - How? connect the phone
+    - simulator? not going to work?
 
 
 ## Additional resources
-
+VM analysis:
 - https://github.com/pzl/ciqdb
 - https://www.atredis.com/blog/2020/11/4/garmin-forerunner-235-dion-blazakis
 
-
+Android app analysis:
+- [Apps no longer trust user added certificates](https://android-developers.googleblog.com/2016/07/changes-to-trusted-certificate.html)
+- [Android - network security configuration](https://developer.android.com/training/articles/security-config#TrustingDebugCa)
 
