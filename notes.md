@@ -19,9 +19,25 @@ The generated app bytecode has to be signed by the developer.
 The signing algorithm uses SHA1 hash of the bytecode that is signed with a private RSA key.
 The key is 4096 long, which is more than recommended.
 
-For the signing, conventions described in PKCS #1 v2.2 are used. 
+For the signing, conventions described in PKCS #1 v2.2 are used.
 
 SHA-1 is no longer considered secure against well-funded opponents. NIST formally deprecated use of this hash function in 2011. In 2020 there was a paper published demonstrating a chosen-prefix collision attack. It still doesn't offer a viable solution to find a collision to a given hash for a chosen prefix. However, the function has been already broken and in the upcoming years new attacks might be discovered. 
+
+#### Algorithm for signing:
+- read bytes from PRG file that hasn't been signed yet
+- don't include the bytes at the end of the file (called TERMINATOR in the code)
+- compute the signature with Java security signature library (SHA1withRSA)
+- Append the file bytes Developer signature, consisting of:
+  - magic number
+  - length of the whole signature
+  - signature
+  - modulus
+  - exponent
+- Or in the case of the store signature:
+  - a different magic number
+  - length of the whole signature
+  - signature
+- Append the terminating bytes that were skipped before
 
 ### Compiler
 The compiler is written in Java, which makes the analysis of the code relatively simple. Nonetheless, the compilation is a complicated process consisting of several stages.  
@@ -32,6 +48,13 @@ During the compilation, the code is translated to mid-level intermediate represe
 ### Modifying the executable
 In order to test the security of the virtual machine, it is useful to be able to edit the executable. However, after changing the bytecode, it is necessary to sign the executable again. After analysis of _monkeybrains.jar_ file, I created a kotlin script that signs the app again.
 
+## Virtual Machine
+
+### Simulator decompilation with Ghidra
+
+Searching for value `0xD000D000` reveals two references in the code. Based on the [article](https://www.atredis.com/blog/2020/11/4/garmin-forerunner-235-dion-blazakis) it is a PRG header tag. The code doesn't look similar to the one included in the article. Theoretically, I could try to analyze the logic for parsing the PRG file. However, it doesn't seem like something that can be done in a reasonable amount of time.
+
+![ghidra](images/ghidra.png)
 
 ## ConnectIQ store
 
@@ -88,9 +111,20 @@ Used domains:
   - server supports **TLS 1.1**
 - `diauth.garmin.com` - Qualys SSl Labs analysis: **grade A**
 
-![alt text](images/mitmproxy%20unpinner.png)
+![mitmproxy unpinner](images/mitmproxy%20unpinner.png)
 
 ## TODO
+
+### Thoughts
+- Does the watch check the signature of installed app? (probably yes...) 
+  - (I can only test it as a black box, without access to the firmware.)
+  - Does it have to be signed by the store? 
+  - Is the store signature applied on a plain PRG file, or the one already signed by the developer?
+    - Compared to Android: there is no store signature, developer signature is used to make sure that the app can be updated only by the original developer of the app.
+  - What if the key leaks?
+  - Is it possible to install the developer signed app with the same BT API that the store uses?
+    - If yes, what about MITM attack?
+
 ### Connect IQ apps TODO
 - analyze native calls security
 - analyze Monkey C security such as:
