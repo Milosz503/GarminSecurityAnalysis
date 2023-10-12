@@ -7,11 +7,16 @@ const val rsaSignatureLength = 512
 const val fullSignatureLength = 1036
 
 fun main(args: Array<String>) {
+    removeStoreSignature("assets/challenges.prg")
 //    verify("assets/BackgroundTimer.prg", File("assets/dev_key.pub"))
-    sign("assets/BackgroundTimer-edited.prg", File("assets/developer_key"))
-    verify("assets/output.prg", File("assets/dev_key.pub"))
+//    sign("assets/BackgroundTimer-edited.prg", File("assets/developer_key"))
+//    verify("assets/output.prg", File("assets/dev_key.pub"))
 }
 
+fun removeStoreSignature(inputFileName: String) {
+    val bytes = File(inputFileName).readBytes()
+    File("$inputFileName.dev.prg").writeBytes((bytes.dropLast(520 + terminatorLength) + getTerminator(bytes)).toByteArray())
+}
 fun verify(inputFileName: String, publicKeyFile: File) {
     val bytes = File(inputFileName).readBytes()
     val inputBytes = getAppBytes(bytes)

@@ -69,6 +69,11 @@ Based on that, it seems that:
 - the phone downloads the app
 - sends it to the watch via BT
 
+### Static analysis
+
+- app signed with **MD5**
+  - Garmin apps are sharing credentials to the cloud. If we can find a collision, we can create an app that will impersonate Garmin devices and have access to the users' cloud?
+
 ### Decompilation of the app
 
 I decompiled the app with JADX. The app is obfuscated.   
@@ -103,6 +108,10 @@ After installing the app, there are some errors with missing resources. I did no
 #### Attempt 3 - just resign the app
 Just resigning the app with a debug key. The app starts, but when trying to log in it seems to work the same as the app from the attempt #1.
 
+#### Attempt 4 — use rooted phone
+
+WORKS!
+
 ### Analyzing mitmproxy traffic
 Based on the limited amount of traffic that went through mitmproxy:
 
@@ -112,6 +121,31 @@ Used domains:
 - `diauth.garmin.com` - Qualys SSl Labs analysis: **grade A**
 
 ![mitmproxy unpinner](images/mitmproxy%20unpinner.png)
+
+#### PRG file
+
+The file is signed by the store on top of the developer signature.
+
+#### Sideloading an app
+
+Seems like watch is checking the store signature. But it is possible to replace the app with another one that was signed by the store
+
+#### API
+
+The List of apps is received as JSON, description looks just like a regular string. I don't think they support any special tags, no HTML. The same goes for the reviews
+
+### App communication with the phone
+```
+Communications.transmit
+```
+It seems like any phone app can receive events from all watch apps. There is no authentication.
+
+I have a proof of concept, but idk which apps are using it, if any...
+
+### How is Garmin communicating between all their apps?
+#### Privacy issue #1
+Every app can register for garmin ConnectIQ service without registering any permissions. It can give the information if and what Garmin device the user has connected to the phone.
+
 
 ## TODO
 
@@ -140,6 +174,13 @@ Things to analyze:
   - sniff
     - How? connect the phone
     - simulator? not going to work?
+
+
+## Attacks?
+- Apps are signed by the store. It is probably validated on the watch. What if the key leaks?
+- Android app is signed with MD5, what if we find a collision?
+- Basic information about the connected Garmin devices is broadcased to all installed applications on Android. Privacy concern. What other communication between Garmin official apps?
+  - Everyone can also check if an app is installed on the watch
 
 
 ## Additional resources
