@@ -142,10 +142,28 @@ It seems like any phone app can receive events from all watch apps. There is no 
 
 I have a proof of concept, but idk which apps are using it, if any...
 
-### How is Garmin communicating between all their apps?
+According to Android documentation: [About broadcasts](https://developer.android.com/guide/components/broadcasts),
+it is possible to send broadcasts that can be only received by apps with specific permissions.
+It is also possible to define a custom permission.
+However, custom permissions have to be already defined when such app is being installed.
+Because of that, it is probably not a viable option for Garmin.
+
+![Android custom permissions note](images/android-custom-permissions-note.png)
+
 #### Privacy issue #1
 Every app can register for garmin ConnectIQ service without registering any permissions. It can give the information if and what Garmin device the user has connected to the phone.
 
+### How is Garmin communicating between all their Android apps?
+
+Garmin apps define their own permissions. One of them is for example `com.garmin.android.apps.connectmobile.permission.RECEIVE_BROADCASTS`, which allows to listen for action `ACTION_ON_FIND_MY_PHONE_MESSAGE_RECEIVED`, which triggers sound on the phone.
+I don't know, however, who sends this action.
+
+### Third party apps permissions
+
+Third party apps can user's personal information or access the internet. To do so, they need to request permission, specific to the used module.
+For example, `Communications`, `Fit`, `Positioning`. This system offers some granularity, and the user can see what data will the app have access to.
+However, in February 2023, Garmin introduced a new module: Complications. It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.
+However, it should be considered that it removes the granularity of permissions. Every app can potentially publish very sensitive data. And every watch face can access all this data if it requests `Complications` permission. 
 
 ## TODO
 
