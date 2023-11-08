@@ -160,6 +160,8 @@ I don't know, however, who sends this action.
 
 ### Third party apps permissions
 
+
+#### Privacy issue #2
 Third party apps can user's personal information or access the internet. To do so, they need to request permission, specific to the used module.
 For example, `Communications`, `Fit`, `Positioning`. This system offers some granularity, and the user can see what data will the app have access to.
 However, in February 2023, Garmin introduced a new module: Complications. It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.

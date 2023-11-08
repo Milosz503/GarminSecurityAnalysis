@@ -1,13 +1,23 @@
+import oracle.Oracle
+import poet.Poet
 import java.io.File
-import java.nio.ByteBuffer
 import java.security.Signature
 
 const val terminatorLength = 8
 const val rsaSignatureLength = 512
 const val fullSignatureLength = 1036
 
-fun main(args: Array<String>) {
-    removeStoreSignature("assets/challenges.prg")
+suspend fun main(args: Array<String>) {
+    val prgFile = PrgFile.fromFile("assets/BackgroundTimer.prg")
+    val poet = Poet(0)
+    val oracle = Oracle("Okay", 15000)
+    for(bytes in poet.generate(prgFile).take(10)) {
+        oracle.check(bytes)
+    }
+
+//    File("assets/BackgroundTimer2.prg").writeBytes(PrgFile.fromFile("assets/BackgroundTimer.prg").export().toByteArray())
+//    println("Test \u0000 test")
+//    removeStoreSignature("assets/challenges.prg")
 //    verify("assets/BackgroundTimer.prg", File("assets/dev_key.pub"))
 //    sign("assets/BackgroundTimer-edited.prg", File("assets/developer_key"))
 //    verify("assets/output.prg", File("assets/dev_key.pub"))

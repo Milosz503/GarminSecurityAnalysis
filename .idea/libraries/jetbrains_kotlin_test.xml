@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="jetbrains.kotlin.test" type="repository">
+    <properties maven-id="org.jetbrains.kotlin:kotlin-test:1.7.10" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-test-1.7.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-1.7.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-common-1.7.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/annotations-13.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
