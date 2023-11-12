@@ -2,27 +2,39 @@ import java.io.File
 import java.security.Signature
 
 class PrgFile(
-    bytes: List<Byte>
+    bytes: List<Byte>,
+    val originalSignature: List<Byte>,
+    val terminator: List<Byte> = List(terminatorLength) { 0 }
 ) {
-    val appBytes: MutableList<Byte>
 
-    private val originalSignature: List<Byte>
-    private val terminator: List<Byte>
+    val appBytes: MutableList<Byte>
 
     companion object {
 
         const val terminatorLength = 8
         const val rsaSignatureLength = 512
         const val fullSignatureLength = 1036
-        fun fromFile(fileName: String): PrgFile {
-            return PrgFile(File(fileName).readBytes().toList())
+        fun fromFile(file: File): PrgFile {
+            val bytes = file.readBytes().toList()
+            val appBytes = getAppBytes(bytes)
+            val signature = getFullSignature(bytes)
+            val terminator = getTerminator(bytes)
+            return PrgFile(appBytes, signature, terminator)
         }
+
+        private fun getAppBytes(bytes: List<Byte>): MutableList<Byte> {
+            return bytes.dropLast(fullSignatureLength + terminatorLength).toMutableList()
+        }
+
+        private fun getFullSignature(bytes: List<Byte>): List<Byte> {
+            return bytes.dropLast(terminatorLength).takeLast(fullSignatureLength)
+        }
+
+        private fun getTerminator(bytes: List<Byte>) = bytes.takeLast(terminatorLength)
     }
 
     init {
-        appBytes = getAppBytes(bytes)
-        originalSignature = getFullSignature(bytes)
-        terminator = getTerminator(bytes)
+        appBytes = bytes.toMutableList()
     }
 
     fun export(): List<Byte> {
@@ -34,13 +46,5 @@ class PrgFile(
         return appBytes + newSignature + terminator
     }
 
-    private fun getAppBytes(bytes: List<Byte>): MutableList<Byte> {
-        return bytes.dropLast(fullSignatureLength + terminatorLength).toMutableList()
-    }
 
-    private fun getFullSignature(bytes: List<Byte>): List<Byte> {
-        return bytes.dropLast(terminatorLength).takeLast(fullSignatureLength)
-    }
-
-    private fun getTerminator(bytes: List<Byte>) = bytes.takeLast(terminatorLength)
 }

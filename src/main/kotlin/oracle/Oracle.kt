@@ -3,46 +3,84 @@ package oracle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
-import java.io.InputStreamReader
+import kotlin.time.measureTimedValue
 
 class Oracle(
+    private val simulator: Simulator,
     private val expectedOutput: String,
     private val timeout: Long
 ) {
     private val monkeyDoCommand = "/home/milosz/.Garmin/ConnectIQ/Sdks/connectiq-sdk-lin-6.3.1-2023-09-13-47b193194/bin/monkeydo"
-    suspend fun check(prgBytes: ByteArray): Boolean {
-        val appFile = prepareApp(prgBytes)
-        println("----------")
-        println("Testing app '$appFile'...")
 
-        val result = testApp(appFile)
-        if(result) {
-            appFile.delete()
+    private val expectedErrors = listOf("Unable to parser the app's UUID from the PRG.")
+
+    suspend fun check(prgBytes: ByteArray): Boolean {
+        val timedValue = measureTimedValue {
+            val appFile = prepareApp(prgBytes)
+            println("----------")
+            println("Testing app '$appFile'...")
+
+            val result = testApp(appFile)
+            if(result) {
+                appFile.delete()
+                println("Finished testing with success!")
+            } else {
+                println("[!] App Failed [!]")
+            }
+            result
         }
-        return result
+        println("Elapsed: ${timedValue.duration}")
+        return timedValue.value
     }
 
     private suspend fun testApp(appFile: File): Boolean = withContext(Dispatchers.IO) {
         val processBuilder = ProcessBuilder()
         processBuilder.command(monkeyDoCommand, appFile.absolutePath, "vivoactive4")
-        val startTime = System.currentTimeMillis()
+
         val process = processBuilder.start()
-        val reader = BufferedReader(InputStreamReader(process.inputStream))
-        while(System.currentTimeMillis() - startTime < timeout) {
-            if(reader.ready()) {
-                val line = reader.readLine()
-                println("  > $line")
-                if(line == expectedOutput) {
-                    println("Finished testing with success!")
-                    return@withContext true
+        val reader = process.inputReader()
+        val errorReader = process.errorReader()
+        val result: Boolean = withTimeoutOrNull(timeout) {
+            var lastErrorLine = ""
+            var foundExpectedOutputLine = false
+            while(process.isAlive) {
+                delay(100)
+                while(simulator.ready()) {
+                    val line = simulator.readLine()
+                    println("  >SIM $line")
+                    val expectedLine = "Error: 'Signature check failed on file: ${appFile.name.uppercase().dropLast(4)}'"
+                    if(line.endsWith(expectedLine)) {
+                        println("  Found expected simulator error line")
+                        return@withTimeoutOrNull true
+                    }
+                }
+                if (foundExpectedOutputLine) {
+                    println("  Found expected output line")
+                    return@withTimeoutOrNull true
+                }
+                while (reader.ready()) {
+                    val line = reader.readLine()
+                    println("  >I $line")
+                    if (line == expectedOutput) {
+                        foundExpectedOutputLine = true
+                    }
+                }
+                while (errorReader.ready()) {
+                    lastErrorLine = errorReader.readLine()
+                    println("  >E $lastErrorLine")
+
                 }
             }
-            delay(100)
-        }
-        println("[!] App Failed [!]")
-        return@withContext false
+            println("   EXIT CODE: ${process.exitValue()}")
+            if (expectedErrors.contains(lastErrorLine)) {
+                println("  Found expected error line")
+                return@withTimeoutOrNull true
+            }
+            false
+        } ?: false
+        return@withContext result
     }
 
     private fun prepareApp(prgBytes: ByteArray): File {

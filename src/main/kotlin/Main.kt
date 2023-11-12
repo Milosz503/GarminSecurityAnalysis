@@ -1,4 +1,5 @@
 import oracle.Oracle
+import oracle.Simulator
 import poet.Poet
 import java.io.File
 import java.security.Signature
@@ -8,12 +9,21 @@ const val rsaSignatureLength = 512
 const val fullSignatureLength = 1036
 
 suspend fun main(args: Array<String>) {
-    val prgFile = PrgFile.fromFile("assets/BackgroundTimer.prg")
+    val simulator = Simulator()
+    if(!simulator.start()) {
+        println("Failed to start simulator")
+        simulator.close()
+        return
+    }
+
+    val prgFile = PrgFile.fromFile(File("assets/BackgroundTimer.prg"))
     val poet = Poet(0)
-    val oracle = Oracle("Okay", 15000)
-    for(bytes in poet.generate(prgFile).take(10)) {
+    val oracle = Oracle(simulator, "Okay", 15000)
+    for (bytes in poet.generate(prgFile).take(10)) {
         oracle.check(bytes)
     }
+
+    simulator.close()
 
 //    File("assets/BackgroundTimer2.prg").writeBytes(PrgFile.fromFile("assets/BackgroundTimer.prg").export().toByteArray())
 //    println("Test \u0000 test")
