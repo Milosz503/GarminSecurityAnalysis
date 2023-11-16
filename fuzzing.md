@@ -24,6 +24,28 @@ Then eventual findings test on a real device
   - the oracle
 
 
+## What to do with the results?
+
+### Idea #1 - isolate the bit mutation that caused the crash
+
+- try to find the smallest bit mutation that causes the crash
+- try to find out what is this part of the file responsible for
+- if the mutation modified the executable code, try to find the corresponding part of the Monkey code
+
+One issue: the crash is non-deterministic, multiple tries might be needed?
+
+### Idea #2 - modify the fuzzing to mutate only specific parts of the file
+
+Mutate only parts of the file such as opcodes, api method calls. This was it should easier to find the corresponding part of the Monkey code.
+
+### Test on a real device
+
+Running those apps on a real device does not crash the watch. 
+There is still a chance that the segmentation fault is not detected on the watch as there might be a lower protection level.
+
+**TODO**: Figure out what exactly is causing the crash and try to see if the watch is vulnerable
+
+
 
 # Logs
 

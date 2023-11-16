@@ -32,7 +32,7 @@ class Oracle(
             // Wait for the simulator to potentially crash
             delay(100)
             if(simulator.isAlive() && result != Result.IncorrectBehaviour) {
-//                appFile.delete()
+                appFile.delete()
                 println("Finished testing with success!")
             } else {
                 println("[!] App Failed [!]")

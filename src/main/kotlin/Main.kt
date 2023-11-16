@@ -18,14 +18,14 @@ suspend fun main(args: Array<String>) {
         return
     }
 
-    val prgFile = PrgFile.fromFile(File("assets/build/BackgroundTimer.prg"))
-    val random = Random(4)
+    val prgFile = PrgFile.fromFile(File("assets/build2/BackgroundTimer.prg"))
+    val random = Random(7)
     val poet = Poet(random)
     val mutator = Mutator(prgFile, poet, random, 0.01f)
     val oracle = Oracle(simulator, "Okay", 15000)
 
     var appPassed = true
-    for (i in 1..200) {
+    for (i in 1..50) {
         println("Iteration $i")
         val bytes = mutator.mutate(appPassed)
         val result = oracle.check(bytes)
