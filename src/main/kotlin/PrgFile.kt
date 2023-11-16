@@ -15,7 +15,10 @@ class PrgFile(
         const val rsaSignatureLength = 512
         const val fullSignatureLength = 1036
         fun fromFile(file: File): PrgFile {
-            val bytes = file.readBytes().toList()
+            return fromBytes(file.readBytes())
+        }
+
+        fun fromBytes(bytes: ByteArray): PrgFile {
             val appBytes = getAppBytes(bytes)
             val signature = getFullSignature(bytes)
             val terminator = getTerminator(bytes)

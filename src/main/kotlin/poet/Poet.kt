@@ -3,13 +3,7 @@ package poet
 import PrgFile
 import kotlin.random.Random
 
-class Poet(seed: Int) {
-
-    private val random: Random
-
-    init {
-        random = Random(seed)
-    }
+class Poet(private val random: Random) {
 
     fun generate(prg: PrgFile) = sequence<ByteArray> {
 //        yield(prg.export().toByteArray())

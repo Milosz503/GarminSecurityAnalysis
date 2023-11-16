@@ -1,8 +1,10 @@
 import oracle.Oracle
 import oracle.Simulator
+import poet.Mutator
 import poet.Poet
 import java.io.File
 import java.security.Signature
+import kotlin.random.Random
 
 const val terminatorLength = 8
 const val rsaSignatureLength = 512
@@ -16,11 +18,23 @@ suspend fun main(args: Array<String>) {
         return
     }
 
-    val prgFile = PrgFile.fromFile(File("assets/BackgroundTimer.prg"))
-    val poet = Poet(0)
+    val prgFile = PrgFile.fromFile(File("assets/build/BackgroundTimer.prg"))
+    val random = Random(4)
+    val poet = Poet(random)
+    val mutator = Mutator(prgFile, poet, random, 0.01f)
     val oracle = Oracle(simulator, "Okay", 15000)
-    for (bytes in poet.generate(prgFile).take(10)) {
-        oracle.check(bytes)
+
+    var appPassed = true
+    for (i in 1..200) {
+        println("Iteration $i")
+        val bytes = mutator.mutate(appPassed)
+        val result = oracle.check(bytes)
+        appPassed = result == Oracle.Result.FileValid
+
+        if(!simulator.isAlive()) {
+            println("SUCCESS - SIMULATOR DIED!")
+            break
+        }
     }
 
     simulator.close()
