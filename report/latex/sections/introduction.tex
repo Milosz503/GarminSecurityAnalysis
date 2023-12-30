@@ -1,0 +1,60 @@
+\section{Introduction}
+
+\subsection{Garmin fitness watches}
+
+In the past years fitness trackers experienced a high growth in popularity.
+As the technology develops, the devices get more affordable and are able to track more metrics.
+While it improves the insights into health and fitness tracking, it also means that it collects more sensitive data about the users.
+
+Garmin fitness watches can accompany the users day and night, being able to last even over a week on a single charge.
+They offer a wide range of sensors such as heart rate, pulse oximeter, temperature, gps, compass, accelerometer, gyroscope, altimeter and barometer, light sensor.
+This allows collecting and calculating an enormous amount of different sensitive metrics.
+As a result, the potential consequences of unauthorized access to the user's data are severe.
+
+The watches can work independently, collecting and processing the data offline.
+However, Garmin offers an extensive set of software to improve the user's experience.
+There are multiple apps available for iPhone and Android phones to manage the watch and the data.
+This means that the data is being sent over a Bluetooth protocol from the watch to the phone.
+Additionally, Garmin recommends synchronizing the data with their cloud.
+
+In case the provided software does not fulfill users' requirements, it is also possible to install third party apps on the watch.
+Garmin maintains an ecosystem of tools for the developers to create apps and publish them in a Garmin store.
+It makes the watch extensible and more universal, but it also allows for a third party developer to gain access to some of the user data.
+
+The described software offers a powerful toolset for the analysis of fitness data for every user.
+However, it also creates a large number of possible attack surfaces.
+It is also important to notice that the Garmin software is not open source, and there is no bounty program for finding vulnerabilities.
+
+In this report, a broad analysis of different vector attacks has been performed.
+
+Overall, during the analysis, the following privacy and security concerns were found:
+\begin{itemize}
+    \item Garmin uses deprecated SHA-1 for app signing
+    \item Android apps installed on the phone, without any permissions can detect that the user uses Garmin devices and the type of the device
+    \item Communication between the third party apps and their companion apps are in plain text, available to all apps installed on the Android phone
+    \item Permission system of the third party watch apps is not as well separated into different categories as it is in Android, iOS phones.
+    \item Fuzzy testing suggests that it may be possible to escape the virtual machine that is running the third party apps.
+\end{itemize}
+
+\subsection{Software description}
+
+For the purpose of the analysis, when Garmin watches are mentioned, this report focuses on Garmin Fenix watches series 7.
+Other devices may offer different hardware and software features.
+
+Garmin created SDK for third party app development.
+It is integrated with Visual Studio Code through the Monkey C extension.
+There is an official documentation describing the development process with Visual Studio Code.
+However, it doesn't describe the specific scripts and tools contained in the SDK that are used by the extension.
+The SDK consists mostly of Java class used for compiling and packaging the application.
+Additionally, a simulator is provided for testing the apps.
+Unfortunately, it is implemented as a binary ELF file, which makes the reverse engineering more difficult.
+Moreover, other scripts are provided for other tasks such as uploading an app to the simulator.
+
+List of tools:
+
+\begin{itemize}
+    \item monkeybrains.jar - compiles and build the project
+    \item simulator - simulates a chosen Garmin device
+    \item monkeydo - executes Connect IQ executable on the simulator
+    \item Other scripts: barrelbuild, barreltest, connectiq, era, mdd, monkeyc, monkeygraph, monkeydoc, shell, monkeymotion
+\end{itemize}
