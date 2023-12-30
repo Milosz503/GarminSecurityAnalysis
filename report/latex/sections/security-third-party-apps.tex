@@ -1,8 +1,32 @@
 
 \section{Security of third party apps}
 
-\subsection{Permissions}
 \subsection{App runtime}
+
+The applications are intended to be run on a wide range of devices, with different hardware configurations.
+The execution environment needs to be able to enforce access control and isolation.
+Moreover, the devices are limited in resources, which makes it difficult to adapt the existing solutions such as Java.
+For those reasons, Garmin decided to create a custom virtual machine and a programming language.
+
+However, creating a correct abstraction layer is a complex task.
+It creates a large attack surface, and it is challenging to ensure that the implementation is correct.
+
+\subsection{Permissions}
+
+Third party apps can interact with the watch by using the API provided by the SDK.
+The API is divided into several modules, each of them providing different functionality.
+Some of those functionalities can be considered sensitive, such as GPS location, heart rate, or access to the internet.
+Because of that, Garmin implemented a permission system, where different permissions grant access to different modules.
+The app has to define in the manifest file which permissions it requires, and the user has to accept them before installing the app.
+The system offers some granularity, and can give the user a general overview of what the app can do.
+However, some, potentially sensitive modules don't require any permissions.
+For example, the app can access some basic activity data such as heart rate, steps, calories without any permissions.
+Moreover, in February 2023, Garmin introduced a new module: Complications.
+It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.
+While it makes the access to different metrics more flexible and accessible, it also removes the granularity of the permissions.
+Every app can potentially publish very sensitive data, without the user being aware of it.
+Then every watch face can access all this data if it requests `Complications` permission.
+
 \subsection{Simulator}
 %\begin{figure}[h]
 %    \centering
@@ -84,16 +108,6 @@ Because of that, it is probably not a viable option for Garmin.
 %    \caption{Android custom permissions note}
 %    \label{fig:concept}
 %\end{figure}
-
-\textbf{Privacy issue 2} - Third party apps can user's personal information or access the internet.
-To do so, they need to request permission, specific to the used module.
-For example, `Communications`, `Fit`, `Positioning`.
-This system offers some granularity, and the user can see what data will the app have access to.
-However, in February 2023, Garmin introduced a new module: Complications.
-It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.
-However, it should be considered that it removes the granularity of permissions.
-Every app can potentially publish very sensitive data.
-And every watch face can access all this data if it requests `Complications` permission.
 
 \subsection{Sandboxing}
 \subsection{App sideloading}

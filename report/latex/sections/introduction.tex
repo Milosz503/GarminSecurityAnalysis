@@ -1,5 +1,6 @@
 \section{Introduction}
 
+
 \subsection{Garmin fitness watches}
 
 In the past years fitness trackers experienced a high growth in popularity.
@@ -21,11 +22,13 @@ In case the provided software does not fulfill users' requirements, it is also p
 Garmin maintains an ecosystem of tools for the developers to create apps and publish them in a Garmin store.
 It makes the watch extensible and more universal, but it also allows for a third party developer to gain access to some of the user data.
 
-The described software offers a powerful toolset for the analysis of fitness data for every user.
-However, it also creates a large number of possible attack surfaces.
-It is also important to notice that the Garmin software is not open source, and there is no bounty program for finding vulnerabilities.
+The described software offers a powerful toolset for the users to analyse their fitness data.
+However, it also creates a large number of possible vectors of attack.
+It is also important to notice that the Garmin software is not open source, which makes it more difficult to analyse the security of the software.
+Garmin provides a contact form on their website to report security vulnerabilities.
+Unfortunately, they do not offer a bounty program.
 
-In this report, a broad analysis of different vector attacks has been performed.
+In this report, a broad analysis of different attack vectors has been performed.
 
 Overall, during the analysis, the following privacy and security concerns were found:
 \begin{itemize}
@@ -33,28 +36,36 @@ Overall, during the analysis, the following privacy and security concerns were f
     \item Android apps installed on the phone, without any permissions can detect that the user uses Garmin devices and the type of the device
     \item Communication between the third party apps and their companion apps are in plain text, available to all apps installed on the Android phone
     \item Permission system of the third party watch apps is not as well separated into different categories as it is in Android, iOS phones.
-    \item Fuzzy testing suggests that it may be possible to escape the virtual machine that is running the third party apps.
+    \item Fuzzy testing suggests that it may be possible to escape the virtual machine running the third party apps.
 \end{itemize}
+
 
 \subsection{Software description}
 
 For the purpose of the analysis, when Garmin watches are mentioned, this report focuses on Garmin Fenix watches series 7.
-Other devices may offer different hardware and software features.
+Other devices may offer different hardware and software configurations.
 
-Garmin created SDK for third party app development.
-It is integrated with Visual Studio Code through the Monkey C extension.
-There is an official documentation describing the development process with Visual Studio Code.
-However, it doesn't describe the specific scripts and tools contained in the SDK that are used by the extension.
-The SDK consists mostly of Java class used for compiling and packaging the application.
-Additionally, a simulator is provided for testing the apps.
-Unfortunately, it is implemented as a binary ELF file, which makes the reverse engineering more difficult.
-Moreover, other scripts are provided for other tasks such as uploading an app to the simulator.
+Garmin provides multiple mobile apps to manage the watch and the data.
+\begin{itemize}
+    \item Garmin Connect — the main app for managing the watch and the data.
+    \item Garmin Explore — app for managing the watch and the data, focused on the offline usage.
+    \item Garmin Connect IQ Store — app store for third party apps, that can be installed on the watch.
+\end{itemize}
 
-List of tools:
+If the user decides to synchronize the data with the cloud, it is sent to the Garmin Connect services.
+Then it can be accessed through the website or the mobile app.
+
+Additionally, Garmin has developed a proprietary programming language, Monkey C running in a virtual machine for creating third-party apps.
+The developers are provided with an SDK, containing all the necessary tools for creating and testing the apps.
+Monkey C language has an integration with Visual Studio Code through the extension.
+The apps can be tested either on a real device or on a simulator, provided with the SDK\@.
+There is an official documentation describing the development process.
+
+After a preliminary analysis, the following scripts and tools were found in the SDK:
 
 \begin{itemize}
-    \item monkeybrains.jar - compiles and build the project
-    \item simulator - simulates a chosen Garmin device
+    \item monkeybrains.jar - java archive, compiles and builds the project
+    \item simulator - binary ELF file, simulates a chosen Garmin device
     \item monkeydo - executes Connect IQ executable on the simulator
     \item Other scripts: barrelbuild, barreltest, connectiq, era, mdd, monkeyc, monkeygraph, monkeydoc, shell, monkeymotion
 \end{itemize}
