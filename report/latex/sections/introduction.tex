@@ -8,7 +8,8 @@ As the technology develops, the devices get more affordable and are able to trac
 While it improves the insights into health and fitness tracking, it also means that it collects more sensitive data about the users.
 
 Garmin fitness watches can accompany the users day and night, being able to last even over a week on a single charge.
-They offer a wide range of sensors such as heart rate, pulse oximeter, temperature, gps, compass, accelerometer, gyroscope, altimeter and barometer, light sensor.
+The company has a wide range of options, having released over 100 different watches with third party apps support.
+The devices are equipped with a large number of sensors such as heart rate, pulse oximeter, temperature, gps, compass, accelerometer, gyroscope, altimeter, barometer, light sensor.
 This allows collecting and calculating an enormous amount of different sensitive metrics.
 As a result, the potential consequences of unauthorized access to the user's data are severe.
 
@@ -16,7 +17,7 @@ The watches can work independently, collecting and processing the data offline.
 However, Garmin offers an extensive set of software to improve the user's experience.
 There are multiple apps available for iPhone and Android phones to manage the watch and the data.
 This means that the data is being sent over a Bluetooth protocol from the watch to the phone.
-Additionally, Garmin recommends synchronizing the data with their cloud.
+Additionally, Garmin encourages users to synchronize the data with their cloud.
 
 In case the provided software does not fulfill users' requirements, it is also possible to install third party apps on the watch.
 Garmin maintains an ecosystem of tools for the developers to create apps and publish them in a Garmin store.
@@ -41,10 +42,6 @@ Overall, during the analysis, the following privacy and security concerns were f
 
 
 \subsection{Software description}
-
-For the purpose of the analysis, when Garmin watches are mentioned, this report focuses on Garmin Fenix watches series 7.
-Other devices may offer different hardware and software configurations.
-
 Garmin provides multiple mobile apps to manage the watch and the data.
 \begin{itemize}
     \item Garmin Connect — the main app for managing the watch and the data.
@@ -69,3 +66,16 @@ After a preliminary analysis, the following scripts and tools were found in the 
     \item monkeydo - executes Connect IQ executable on the simulator
     \item Other scripts: barrelbuild, barreltest, connectiq, era, mdd, monkeyc, monkeygraph, monkeydoc, shell, monkeymotion
 \end{itemize}
+
+\subsection{Testing environment}
+For the analysis the decision was made to use Linux operating systems as it is a popular choice in the system security community and a large number of materials use it.
+The chosen distribution was Kali Linux because it comes with already preinstalled toolset.
+
+The testing is executed on the watch Garmin Fenix 7S Pro, released in May 2023.
+The third party applications are investigated when using Connect IQ 6.3 SDK, released in August 2023.
+
+For the purpose of the analysis, when Garmin watches are mentioned, this report focuses on Garmin Fenix watches series 7.
+Other devices may offer different hardware and software configurations.
+
+
+

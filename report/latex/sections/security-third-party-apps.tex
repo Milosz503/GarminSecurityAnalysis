@@ -5,11 +5,24 @@
 
 The applications are intended to be run on a wide range of devices, with different hardware configurations.
 The execution environment needs to be able to enforce access control and isolation.
-Moreover, the devices are limited in resources, which makes it difficult to adapt the existing solutions such as Java.
+Moreover, the devices are very limited in resources, which makes it difficult to adapt the existing solutions such as Java virtual machine.
 For those reasons, Garmin decided to create a custom virtual machine and a programming language.
 
 However, creating a correct abstraction layer is a complex task.
 It creates a large attack surface, and it is challenging to ensure that the implementation is correct.
+
+\subsection{Preliminary analysis}
+The existing research analysed the bytecode of the firmware running on the watch.
+Unfortunately, the firmware is no longer available for download.
+There is a chance that it would be possible to revere engineer the watch hardware and extract the firmware from the device.
+However, it would require an extensive amount of time and resources and is out of scope of this report.
+Another option would be to investigate the protocol used to download a new firmware version.
+It would require additional time and there is no guarantee that it would be possible to download the full firmware.
+
+In the end, I decided to perform the analysis on the simulator provided by Garmin.
+As it runs directly on the computer, it is possible to perform a more in-depth analysis of the software such as dynamic analysis.
+The simulator is supposed to guarantee proper isolation, so escaping the sandbox would be a vulnerability.
+Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
 \subsection{Permissions}
 
@@ -81,7 +94,7 @@ Algorithm for signing:
 - signature
 - Append the terminating bytes that were skipped before
 
-\subsection{Communication between the watch and the phone}
+\subsection{Communication between the watch and the phone} \label{subsec:communication-watch-phone}
 
 \subsubsection{Garmin communication between the Android apps}
 Garmin apps define their own permissions.
@@ -110,4 +123,3 @@ Because of that, it is probably not a viable option for Garmin.
 %\end{figure}
 
 \subsection{Sandboxing}
-\subsection{App sideloading}

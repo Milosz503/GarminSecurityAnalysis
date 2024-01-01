@@ -9,6 +9,10 @@ Notes:
     \item sends it to the watch via BT
 \end{itemize}
 
+As the analysis of the Android application was not the main focus of the report, it does not go very deep.
+However, it was necessary to have a basic understanding of the app to be able to analyze the communication between the watch and the phone.
+This is described in the section~\ref{subsec:communication-watch-phone}.
+
 \subsection{App decompilation}
 I decompiled the app with JADX. The app is obfuscated.
 
@@ -61,3 +65,9 @@ Used domains:
 %    \caption{Sniffed traffic}
 %    \label{fig:concept}
 %\end{figure}
+
+\subsection{App sideloading}
+- can we install an app that is not signed up by the store?
+- app signed up only by the developer can be install through the cable, but not through the store
+- the watch is probably checking the certificate
+- it suggests that the Bluetooth API for app installation requires the app to be signed by the store - good thing

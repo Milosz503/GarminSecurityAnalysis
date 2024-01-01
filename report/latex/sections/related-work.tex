@@ -1,11 +1,20 @@
 \section{Related work}
 
 Different attempts at the security analysis of Garmin software are available online.
-However, it is far from being extensive.
-The amount of software, watch models and the fact that firmware is being constantly developed makes it infeasible to cover everything in a single publication.
-There were attempts to ethically hack a Garmin watch[1][2], analyzing different vectors of attack such as the Garmin Connect website, watch communication, and third-party apps.
+There were attempts to ethically hack a Garmin watch\cite{kth-ethical-hacking,kth-audit}, analyzing different vectors of attack such as the Garmin Connect website, watch communication, and third-party apps.
 However, they did not go deep into any of those topics.
-Others tried to reverse engineer Garmin’s Virtual Machine and firmware format[3][4][5].
-While they explored the specific topic deeper, there is still a long list of things that could be explored.
+
+Others tried to reverse engineer Garmin’s Virtual Machine and do a security analysis of the environment\cite{broken-vm,compromising-garmin-watches}.
+They were able to get access to the firmware of the watch.
+With the help of unofficial documentation of the firmware format\cite{firmware-format}, they proceeded to reverse engineer the bytecode.
+During the analysis, they determined which parts of the code are responsible for the third-party apps' execution.
+Thereafter, they found multiple vulnerabilities that have been disclosed to Garmin.
+Some of them affected over a hundred devices for around 7 years.
+
+While they explored the specific topic deeper, there is still a long list of things that could be analyzed in more detail.
 Previous attempts used an available beta firmware for the analysis and used watches released over 4 years ago.
 Since then, many new models have been introduced as well as new firmware versions with new features and expanded developer SDK.
+
+Considering the size of Garmin's ecosystem and the number of different components, the existing, publicly available analysis is far from being comprehensive.
+
+
