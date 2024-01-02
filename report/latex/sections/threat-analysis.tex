@@ -5,26 +5,25 @@ I decided to focus on the analysis of the third party apps, as it is the most in
 The previous research found multiple vulnerabilities in the third party apps runtime affecting over a hundred devices\cite{broken-vm,compromising-garmin-watches}.
 Moreover, both of the articles mention that the analysis was far from being comprehensive.
 Even though Garmin software is a closed source, the researchers were able to find multiple problems in the runtime environment.
-This suggests that there might be potentially more bugs in the software that is worth investigating.
+This suggests it is worth investigating further, as there might be potentially more bugs in the software.
 
 \subsection{Attack surface}
 As the focus of the report is third party apps, the attack surface is limited to the apps and the store.
-There are two apparent ways of exploiting the apps that need to be considered:
+More precisely, for the attack surface, I will focus on the installation of malicious apps.
+If the adversary is able to install a malicious app on the watch, it is possible to access sensitive user data and possibly tamper with it.
+There are two stages of the apps that need to be considered:
 \begin{itemize}
-    \item Malicious app installation without the user's knowledge.
-
-    \item Runtime exploitation
+    \item Installation process
+    \item Runtime
 \end{itemize}
 
-In the report, the following attack surfaces will be analyzed:
+The watch is managed by the phone.
+Because of that, for the security of the watch, it is important to consider the security of the phone as well.
+Assuming that the phone itself is secure, the attack surface is limited to the Garmin mobile apps and the communication between the phone and the watch.
+The installation of the apps is handled by the Connect IQ Store.
+As such, the security of the store has to be analyzed.
 
-\begin{itemize}
-    \item Connect IQ Store
-    \item Third party apps
-    \begin{itemize}
-        \item Installation process
-        \item Permissions
-        \item Isolation
-        \item Communication with the companion app
-    \end{itemize}
-\end{itemize}
+The runtime is handled by the virtual machine, which is responsible for executing the bytecode of the apps.
+Garmin provides a limited set of APIs that the apps can use.
+When the user installs the app, they agree to the permissions requested by the app.
+In this case, it is necessary to analyze if the apps can break the contract and access data or perform actions that they are not supposed to.
