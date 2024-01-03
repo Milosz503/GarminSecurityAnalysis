@@ -49,7 +49,7 @@ The files containing the representations could be used for better understanding 
 Visual Studio calls the compiler, which is a jar file called \textit{monkeybrains.jar}.
 The compiler is written in Java, which makes the analysis of the code relatively straightforward.
 Nonetheless, it is a complicated process consisting of several stages.
-For the analysis, I decided to use JADX decompiler\cite{jadx}.
+For the analysis, I decided to use JADX decompiler\footnote{\url{https://github.com/skylot/jadx}}.
 
 After loading the jar file, I noticed that a large part of the relevant code is not obfuscated.
 Then I proceeded to analyse the code.
@@ -63,34 +63,6 @@ Additionally, SDK provides a mapping of all API methods to the number values, wh
 
 I was able to find the code responsible for signing the application.
 It is described in more detail in the section~\ref{subsec:signing}.
-
-\subsection{Bytecode analysis}
-
-\subsection{Simulator}
-Garmin SDK provides a simulator for testing the apps.
-It is used by the Visual Studio Code extension to run the apps.
-I found the executable in the SDK bin folder.
-The file starts with ELF header, which means that it is a binary executable file.
-To analyse bytecode, I decided to use Ghidra\cite{ghidra}.
-It is free and open-source software for reverse engineering.
-
-After loading the file, a list of assembly instructions is displayed.
-Fortunately, Ghidra has an option to analyse and decompile the code to C\@.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\linewidth]{../../images/ghidra2}
-    \caption{Simulator decompilation}
-    \label{fig:concept}
-\end{figure}
-
-The header of the third party apps is tagged with value `0xD000D000`\cite{broken-vm}.
-Searching for it in the simulator binary reveals two references.
-
-From this point, it would be theoretically possible to analyse the code and reverse engineer the virtual machine.
-However, doing it without any documentation, where the names of the functions and variables are not known would be very challenging.
-As it is not possible to do it in a reasonable amount of time, I decided to focus on fuzzing the virtual machine.
-This is described in the section~\ref{sec:fuzzing}.
 
 \subsection{Signing} \label{subsec:signing}
 Garmin requires that the apps are signed to be installed on the watch\cite{garmin-signing}.
@@ -135,23 +107,102 @@ At the current state of the art, there is no viable solution to find a collision
 However, the function has been already broken and in the upcoming years new attacks might be discovered.
 
 \subsection{Modifying the executable}
-In order to test the security of the virtual machine, it is useful to be able to edit the executable.
+To perform dynamic analysis of the virtual machine, it is useful to be able to edit the executable.
 However, after changing the bytecode, it is necessary to sign the executable again.
-After analysis of \textit{monkeybrains.jar} file, I created a kotlin script that signs the app again.
+With the knowledge gained from the previous section, I created a kotlin script that signs the app again.
+
+The code follows the same instructions as the original method in listing~\ref{lst:signing}.
+The only difference is that the old signature is replaced with the new one.
+
+To verify that the script works correctly, I created a simple app that prints a message in the console.
+Then I modified the bytecode to print a different message and signed the app with the created script.
+After installing the app on the watch and the simulator, the new message was displayed.
+When trying to install the app without the new signature, the watch and the simulator would display an error message.
+
+\subsection{Simulator}
+Garmin SDK provides a simulator for testing the apps.
+It is used by the Visual Studio Code extension to run the apps.
+I found the executable in the SDK bin folder.
+The file starts with ELF header, which means that it is a binary executable file.
+To analyse bytecode, I decided to use Ghidra\footnote{\url{https://ghidra-sre.org/}}.
+It is free and open-source software for reverse engineering.
+
+After loading the file, a list of assembly instructions is displayed.
+Fortunately, Ghidra has an option to analyse and decompile the code to C\@.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{../../images/ghidra}
+    \caption{Simulator decompilation}
+    \label{fig:concept}
+\end{figure}
+
+The header of the third party apps is tagged with value `0xD000D000`\cite{broken-vm}.
+Searching for it in the simulator binary reveals two references.
+
+From this point, it would be theoretically possible to analyse the code and reverse engineer the virtual machine.
+However, doing it without any documentation, where the names of the functions and variables are not known would be very challenging.
+As it is not possible to do it in a reasonable amount of time, I decided to focus on fuzzing the virtual machine.
+This is described in the section~\ref{sec:fuzzing}.
 
 \subsection{Communication between the watch and the phone} \label{subsec:communication-watch-phone}
 
-Garmin apps define their own permissions.
-One of them is for example \verb|com.garmin.android.apps.connectmobile.permission.RECEIVE_BROADCASTS|, which allows to listen for action \verb|ACTION_ON_FIND_MY_PHONE_MESSAGE_RECEIVED|, which triggers sound on the phone.
-I don't know, however, who sends this action.
+Garmin has multiple apps for managing the watch and the data.
+As such, it is interesting to analyse the communication between them and the watch.
+I analyzed the Manifest files in Connect IQ Store and Garmin Connect apps.
+Both of them use Bluetooth permissions to connect with the watch.
+Additionally, they define Garmin custom permissions as can be seen in the figure~\ref{fig:connect-iq-store-permissions}.
+The permissions have set protection level to `signature`(0x2), which means that only apps signed with the same key can use them.
+They are used to be able to receive specific broadcasts, probably to communicate with themselves.
+It is a functionality provided by Android and should offer an appropriate level of security.
 
-\textbf{Privacy issue 1} - Every app can register for garmin ConnectIQ service without registering any permissions.
-It can give the information if and what Garmin device the user has connected to the phone.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../../images/android-declared-permissions}
+    \caption{Declared permissions by Connect IQ Store}
+    \label{fig:connect-iq-store-permissions}
+\end{figure}
 
-It seems like any phone app can receive events from all watch apps.
-There is no authentication.
+When it comes to third party apps, they can communicate with the phone by using the API provided by the SDK\@.
+Garmin created SDK for Android and iOS that allows to create a companion mobile app for the watch app.
+They created an example of watch and Android app that communicate with each other\footnote{\url{https://github.com/garmin/connectiq-android-sdk}}.
+The Android SDK uses Broadcasts under the hood to communicate with Garmin Connect app.
+It allows the programmer to query for available Garmin devices connected to the phone.
+Then it is possible to establish communication with the chosen app on the watch.
 
-I have a proof of concept, but idk which apps are using it, if any\ldots
+The first thing that can be noticed is that the SDK is able to get a list of all Garmin devices connected to the phone without any permissions.
+They use Broadcasts that are available to all apps.
+This creates a potential privacy issue, as any app can get the information if the user has a Garmin device connected to the phone.
+Moreover, it is possible to get the information about the device, such as the model name.
+
+Another issue is that the communication between the app on the watch and the companion app is not encrypted.
+The SDK offers a function to register a listener for events from the watch app, given the app ID\@.
+However, when looking at the implementation, it is a wrapper around the Broadcasts.
+It is possible to register a listener for all events from all apps.
+This means that any app on the phone can listen to the messages from any watch app.
+I did not find any mention that would warn the developers about this issue.
+
+Following this finding, I decided to test this hypothesis.
+I created a simple watch app that sends a message to the companion app.
+Then, based on the SDK, I created an Android app that listens to all messages from all watch apps.
+When I installed both apps, the Android app was able to receive the messages from the watch app with the information about the origin.
+
+Having this information, I proceeded to investigate if it might be an issue for existing apps in the store.
+Firstly, I looked into Spotify and Komoot apps.
+Both of them are very popular and have a large number of downloads.
+They have a full version of the app available on the phone and a companion app on the watch.
+However, they do not use the SDK provided by Garmin.
+Instead, they connect to their servers directly.
+It might be because it was easier to implement, or because they wanted to have more control over the communication.
+
+Then I tried to find apps that use the SDK provided by Garmin.
+I found a developer 'r.485' that has published multiple apps in the store with the companion app on the phone.
+However, when I installed the apps, they did not work correctly.
+
+At this point, I decided to stop the investigation.
+While it is a privacy issue, I could not find any apps that it would affect.
+
+
 
 According to Android documentation: [About broadcasts](https://developer.android.com/guide/components/broadcasts),
 it is possible to send broadcasts that can be only received by apps with specific permissions.
@@ -159,11 +210,9 @@ It is also possible to define a custom permission.
 However, custom permissions have to be already defined when such app is being installed.
 Because of that, it is probably not a viable option for Garmin.
 
-%\begin{figure}[h]
-%    \centering
-%    \includegraphics[width=1\linewidth]{images/android-custom-permissions-note.png}
-%    \caption{Android custom permissions note}
-%    \label{fig:concept}
-%\end{figure}
-
-\subsection{Sandboxing}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../../images/android-custom-permissions-note}
+    \caption{Android custom permissions note}
+    \label{fig:android-custom-permissions-note}
+\end{figure}
