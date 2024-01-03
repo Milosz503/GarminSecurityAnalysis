@@ -42,22 +42,27 @@ Then every watch face can access all this data if it requests `Complications` pe
 
 \subsection{Building process}
 In order to understand the runtime environment, I started with the analysis of the building process.
-
+As it was mentioned, it is recommended to use Visual Studio Code with the extension provided by Garmin.
 During the compilation, the code is translated to mid-level intermediate representation (MIR).
-The files containing the representations are created during the build process and could be used for better understanding of the final artifact.
+The files containing the representations could be used for better understanding of the final artefact.
 
-The compiler is written in Java, which makes the analysis of the code relatively simple.
-Nonetheless, the compilation is a complicated process consisting of several stages.
-
+Visual Studio calls the compiler, which is a jar file called \textit{monkeybrains.jar}.
+The compiler is written in Java, which makes the analysis of the code relatively straightforward.
+Nonetheless, it is a complicated process consisting of several stages.
 For the analysis, I decided to use JADX decompiler\cite{jadx}.
-After loading the jar file, I noticed that a large part of the important code is not obfuscated.
 
-
-Java class `Opcode` contains a list of instructions in the final bytecode.
+After loading the jar file, I noticed that a large part of the relevant code is not obfuscated.
+Then I proceeded to analyse the code.
+The following classes are of particular interest:
+\begin{itemize}
+    \item \texttt{com.garmin.monkeybrains.compiler2.Compiler2} — main class responsible for the compilation process.
+    \item \texttt{com.garmin.connectiq.common.monkeyc.AssemblerOpcode} — contains a list of instructions in the final bytecode.
+    \item \texttt{com.garmin.connectiq.common.signing.SigningUtils} — class responsible for signing the app, described in more detail in the section~\ref{subsec:signing}.
+\end{itemize}
 Additionally, SDK provides a mapping of all API methods to the number values, which is probably some type of address.
 
 I was able to find the code responsible for signing the application.
-It is describe in more detail in the section~\ref{subsec:signing}.
+It is described in more detail in the section~\ref{subsec:signing}.
 
 \subsection{Bytecode analysis}
 
@@ -87,38 +92,52 @@ However, doing it without any documentation, where the names of the functions an
 As it is not possible to do it in a reasonable amount of time, I decided to focus on fuzzing the virtual machine.
 This is described in the section~\ref{sec:fuzzing}.
 
-\subsection{Modifying the executable}
-In order to test the security of the virtual machine, it is useful to be able to edit the executable.
-However, after changing the bytecode, it is necessary to sign the executable again.
-After analysis of \textit{monkeybrains.jar} file, I created a kotlin script that signs the app again.
 \subsection{Signing} \label{subsec:signing}
-The generated app bytecode has to be signed by the developer.
+Garmin requires that the apps are signed to be installed on the watch\cite{garmin-signing}.
+The app has to be signed by the developer with their private key.
+In order for the app to be updated, it has to be signed with the same key.
+When the store has approved the app, it is additionally signed wit the store signature.
+
+The described process enforces that the app can be updated only by the developer having access to the original private key.
+Additionally, when the app is downloaded from the store, the watch can verify that it has been approved by the store.
+
+Based on the analysis of the compiler, class \texttt{SigningUtils} is responsible for signing the app.
+It uses \texttt{java.security.Signature} class to generate the signature.
 The signing algorithm uses SHA1 hash of the bytecode that is signed with a private RSA key.
 The key is 4096 long, which is more than recommended.
+For the signing, conventions described in PKCS \#1 v2.2 are used\cite{java-signature,pkcs}.
+The pseudocode of the signing algorithm is presented in the listing~\ref{lst:signing}.
+Store signature is generated in a similar way, does not include the modulus and exponent, and uses a different magic number.
+The store probably uses the public key in the developer signature to verify and save it after the first upload of the app.
+\begin{lstlisting}[caption={Signing algorithm, developer signature},captionpos=b,label={lst:signing},language=Python]
+    def sign_with_developer_signature():
+        app_bytes = read_prg_file()
+        app_bytes, terminator = remove_terminator(app_bytes)
+        signature, modulus, exponent = compute_signature(app_bytes)
 
-For the signing, conventions described in PKCS \#1 v2.2 are used.
+        dev_signature = byte_array()
+        dev_signature.append(MAGIC_NUMBER)
+        dev_signature.append(signature_lenght)
+        dev_signature.append(signature)
+        dev_signature.append(modulus)
+        dev_signature.append(exponent)
+
+        signed_app = byte_array()
+        signed_app.append_all(app_bytes, dev_signature, terminator)
+        write_prg_file(signed_app)
+\end{lstlisting}
 
 SHA-1 is no longer considered secure against well-funded opponents.
 NIST formally deprecated use of this hash function in 2011.
 In 2020 there was a paper published demonstrating a chosen-prefix collision attack.
-It still doesn't offer a viable solution to find a collision to a given hash for a chosen prefix.
+A potential vector of attack would be to create a malicious app with the same hash as the original app.
+At the current state of the art, there is no viable solution to find a collision to a given hash for a chosen prefix.
 However, the function has been already broken and in the upcoming years new attacks might be discovered.
 
-Algorithm for signing:
-- read bytes from PRG file that hasn't been signed yet
-- don't include the bytes at the end of the file (called TERMINATOR in the code)
-- compute the signature with Java security signature library (SHA1withRSA)
-- Append the file bytes Developer signature, consisting of:
-- magic number
-- length of the whole signature
-- signature
-- modulus
-- exponent
-- Or in the case of the store signature:
-- a different magic number
-- length of the whole signature
-- signature
-- Append the terminating bytes that were skipped before
+\subsection{Modifying the executable}
+In order to test the security of the virtual machine, it is useful to be able to edit the executable.
+However, after changing the bytecode, it is necessary to sign the executable again.
+After analysis of \textit{monkeybrains.jar} file, I created a kotlin script that signs the app again.
 
 \subsection{Communication between the watch and the phone} \label{subsec:communication-watch-phone}
 
