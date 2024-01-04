@@ -203,16 +203,8 @@ At this point, I decided to stop the investigation.
 While it is a privacy issue, I could not find any apps that it would affect.
 
 
-
-According to Android documentation: [About broadcasts](https://developer.android.com/guide/components/broadcasts),
-it is possible to send broadcasts that can be only received by apps with specific permissions.
-It is also possible to define a custom permission.
-However, custom permissions have to be already defined when such app is being installed.
+As Garmin already uses custom permissions for communication between their apps, I wondered why they did not use it for the SDK\@.
+According to Android documentation,\cite{android-broadcasts} it is possible to send broadcasts that can be only received by apps with specific permissions.
+It is also possible to define a custom permission that can be requested by other apps.
+However, custom permissions have to be already defined when such an app is being installed.
 Because of that, it is probably not a viable option for Garmin.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\linewidth]{../../images/android-custom-permissions-note}
-    \caption{Android custom permissions note}
-    \label{fig:android-custom-permissions-note}
-\end{figure}

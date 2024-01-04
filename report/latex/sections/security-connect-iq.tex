@@ -24,8 +24,14 @@ Probably there is not much of a point to check the certificate on the phone, ass
 I didn't manage to find the code responsible for downloading the app.
 \subsection{Static analysis}
 
-\subsection{Network security}
-- emulator does not have access to BT
+\subsection{Sniffing the traffic}
+To analyze the network security, I tried to sniff the traffic between the phone and Garmin servers.
+I decided to use mitmproxy\footnote{\url{https://mitmproxy.org/}}.
+When dynamically analyzing the app, there are two opitons.
+Either use an emulator or a real device.
+Emulator usually offers more flexibility and is easier to manipulate.
+However, it does not have access to Bluetooth, which is necessary to test the app.
+For this reason, I used a real device.
 - linux hotspot + mitmproxy - problem with certificates.
 Two options to solve the problem:
 - Rooted phone
@@ -35,26 +41,28 @@ The minimum supported Android version is 7.
 Those versions require root access to add certificates supported by applications.
 Another option is to modify the app to accept user added certificates.
 
-Attempt 1 - Android Unpinner
+\subsubsection*{Attempt 1 - Android Unpinner}
 Use Android Unpinner - https://github.com/mitmproxy/android-unpinner
 
 The app starts when connected to mitmproxy.
 However, when trying to log in, it goes back to the welcome screen.
 **Not possible to log in**.
 
-Attempt 2 — manually modify the apk and sign again
+\subsubsection*{Attempt 2 — manually modify the apk and sign again}
+
 Using Apktool(https://apktool.org/) to unpack the app, modify, and pack again, align zip file and sign with a debug key.
 
 After installing the app, there are some errors with missing resources.
 I did not investigate it further.
 
-Attempt 3 - just resign the app.
+\subsubsection*{Attempt 3 — only resign the app.}
 Just resigning the app with a debug key.
 The app starts, but when trying to log in it seems to work the same as the app from the attempt \#1.
 
-Attempt 4 — use rooted phone
+\subsubsection*{Attempt 4 — use rooted phone}
 Short description about the root
 
+\subsection{Network security,}
 Based on the traffic that went through mitmproxy:
 
 Used domains:
