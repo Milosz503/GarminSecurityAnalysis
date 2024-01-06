@@ -1,6 +1,28 @@
 \section{Fuzzing third party apps} \label{sec:fuzzing}
+\subsection{Introduction}
+Static analysis of assembly code is a very time-consuming process that requires extensive knowledge.
+Without any documentation, source code provided by the vendor, or any other help, it is extremely difficult to understand the code.
+
+For this reason, I decided to use dynamic analysis to find vulnerabilities in the code.
+As I am focusing on analysis of the virtual machine in the simulator, there are more possibilities to test the behaviour during runtime.
+The simulator allows running the code in a controlled environment, which makes it easier to test different scenarios.
+With this approach, there is no need to understand the code.
+It is also valuable when the code base is large and complex.
+Additionally, instead of spending time on reverse engineering, it is possible to write a fuzzer that will do the difficult work.
+Sometimes it might be necessary to run the fuzzer for a long time.
+This, however, does not require any human interaction and can be scaled to run on multiple machines or threads.
+The expected outcome of the fuzzer is a binary file that crashes the virtual machine and can be run on the watch.
+
+Finding vulnerabilities in the simulator is aimed at achieving two potential objectives.
+Firstly, it might be possible to escape the sandbox and execute arbitrary code on the host machine.
+Secondly, vulnerabilities in the simulator might be present in the real device as well.
+
 \subsection{Environment setup}
 
 \subsection{Fuzzing solutions}
+One of the most popular fuzzing solutions is AFL++\cite{aflplusplus}.
+It is an improved fork to Google's AFL\footnote{\url{https://github.com/google/AFL}}, which is no longer maintained.
+AFL++ is an open-source tool
+
 \subsection{Fuzzing process}
 \subsection{Fuzzing results}

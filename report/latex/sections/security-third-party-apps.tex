@@ -81,15 +81,15 @@ For the signing, conventions described in PKCS \#1 v2.2 are used\cite{java-signa
 The pseudocode of the signing algorithm is presented in the listing~\ref{lst:signing}.
 Store signature is generated in a similar way, does not include the modulus and exponent, and uses a different magic number.
 The store probably uses the public key in the developer signature to verify and save it after the first upload of the app.
-\begin{lstlisting}[caption={Signing algorithm, developer signature},captionpos=b,label={lst:signing},language=Python]
+\begin{lstlisting}[caption={Pseudocode of the signing algorithm, developer signature},captionpos=b,label={lst:signing},language=Python]
     def sign_with_developer_signature():
         app_bytes = read_prg_file()
         app_bytes, terminator = remove_terminator(app_bytes)
         signature, modulus, exponent = compute_signature(app_bytes)
 
         dev_signature = byte_array()
-        dev_signature.append(MAGIC_NUMBER)
-        dev_signature.append(signature_lenght)
+        dev_signature.append(magic_number)
+        dev_signature.append(signature_length)
         dev_signature.append(signature)
         dev_signature.append(modulus)
         dev_signature.append(exponent)
