@@ -98,12 +98,15 @@ Using divide and conquer approach, it is possible to find the byte that broke th
         \caption{Simulator output when signature verification fails}
         \label{fig:simulator-signature-failed}
     \end{subfigure}
+    \caption{Simulator}
 \end{figure}
 The simulator component is responsible for running the simulator executable.
-It monitors the output of the simulator to recognise if the provided input has been executed successfully.
+In Figure~\ref{fig:simulator-seed-app}, the simulator is running the seed application.
+The component monitors the output of the simulator, which can be used by the Oracle to decide if provided input has been executed successfully.
 This information is needed to decide if the mutator should mutate the current application or revert the previous mutation.
-Additionally, it detects when the simulator crashes.
-This information is used by the Oracle component to decide if a bug has been found.
+Example output of the simulator is presented in Figure~\ref{fig:simulator-signature-failed}.
+Additionally, the component detects when the simulator crashes.
+This information is used by the Oracle component to determine if a bug has been found.
 
 \subsubsection*{MonkeyDo}
 

@@ -114,8 +114,16 @@ With the knowledge gained from the previous section, I created a kotlin script t
 The code follows the same instructions as the original method in listing~\ref{lst:signing}.
 The only difference is that the old signature is replaced with the new one.
 
-To verify that the script works correctly, I created a simple app that prints a message in the console.
-Then I modified the bytecode to print a different message and signed the app with the created script.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{../../images/app-hex-editor-hello-world}
+    \caption{Simulator decompilation}
+    \label{fig:hello-world}
+\end{figure}
+
+To verify that the script works correctly, I created a simple app that shows a message 'Hello world'.
+Then I opened the prg file in a hex editor and searched for the message, as presented in the figure~\ref{fig:hello-world}.
+Consequently, I modified the string and signed the app with the created script.
 After installing the app on the watch and the simulator, the new message was displayed.
 When trying to install the app without the new signature, the watch and the simulator would display an error message.
 
