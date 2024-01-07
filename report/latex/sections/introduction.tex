@@ -35,7 +35,8 @@ Overall, during the analysis, the following privacy and security concerns were f
 \begin{itemize}
     \item Garmin uses deprecated SHA-1 for app signing
     \item Android apps installed on the phone, without any permissions can detect that the user uses Garmin devices and the type of the device
-    \item Communication between the third party apps and their companion apps are in plain text, available to all apps installed on the Android phone
+    \item Communication between the third party apps and their companion apps are in plain text, available to all apps installed on the Android phone.
+    I created a proof of concept app that can eavesdrop on the messages sent to the phone.
     \item Permission system of the third party watch apps is not as well separated into different categories as it is in Android, iOS phones.
     \item Fuzzy testing suggests that it may be possible to escape the virtual machine running the third party apps.
 \end{itemize}
