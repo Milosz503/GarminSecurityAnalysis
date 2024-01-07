@@ -1,7 +1,7 @@
 
-\section{Security of third party apps}
+\chapter{Security of third party apps}
 
-\subsection{App runtime}
+\section{App runtime}
 
 The applications are intended to be run on a wide range of devices, with different hardware configurations.
 The execution environment needs to be able to enforce access control and isolation.
@@ -11,7 +11,7 @@ For those reasons, Garmin decided to create a custom virtual machine and a progr
 However, creating a correct abstraction layer is a complex task.
 It creates a large attack surface, and it is challenging to ensure that the implementation is correct.
 
-\subsection{Preliminary analysis}
+\section{Preliminary analysis}
 The existing research analysed the bytecode of the firmware running on the watch.
 Unfortunately, the firmware is no longer available for download.
 There is a chance that it would be possible to reverse engineer the watch hardware and extract the firmware from the device.
@@ -24,7 +24,7 @@ As it runs directly on the computer, it is possible to perform a more in-depth a
 The simulator is supposed to guarantee proper isolation, so escaping the sandbox would be a potential vulnerability.
 Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
-\subsection{Permissions}
+\section{Permissions}
 
 Third party apps can interact with the watch by using the API provided by the SDK.
 The API is divided into several modules, each of them providing different functionality.
@@ -40,7 +40,7 @@ While it makes the access to different metrics more flexible and accessible, it 
 Every app can potentially publish very sensitive data, without the user being aware of it.
 Then every watch face can access all this data if it requests `Complications` permission.
 
-\subsection{Building process}
+\section{Building process}
 In order to understand the runtime environment, I started with the analysis of the building process.
 As it was mentioned, it is recommended to use Visual Studio Code with the extension provided by Garmin.
 During the compilation, the code is translated to mid-level intermediate representation (MIR).
@@ -64,7 +64,7 @@ Additionally, SDK provides a mapping of all API methods to the number values, wh
 I was able to find the code responsible for signing the application.
 It is described in more detail in the section~\ref{subsec:signing}.
 
-\subsection{Signing} \label{subsec:signing}
+\section{Signing} \label{subsec:signing}
 Garmin requires that the apps are signed to be installed on the watch\cite{garmin-signing}.
 The app has to be signed by the developer with their private key.
 In order for the app to be updated, it has to be signed with the same key.
@@ -106,7 +106,7 @@ A potential vector of attack would be to create a malicious app with the same ha
 At the current state of the art, there is no viable solution to find a collision to a given hash for a chosen prefix.
 However, the function has been already broken and in the upcoming years new attacks might be discovered.
 
-\subsection{Modifying the executable}
+\section{Modifying the executable}
 To perform dynamic analysis of the virtual machine, it is useful to be able to edit the executable.
 However, after changing the bytecode, it is necessary to sign the executable again.
 With the knowledge gained from the previous section, I created a kotlin script that signs the app again.
@@ -119,7 +119,7 @@ Then I modified the bytecode to print a different message and signed the app wit
 After installing the app on the watch and the simulator, the new message was displayed.
 When trying to install the app without the new signature, the watch and the simulator would display an error message.
 
-\subsection{Simulator}
+\section{Simulator}
 Garmin SDK provides a simulator for testing the apps.
 It is used by the Visual Studio Code extension to run the apps.
 I found the executable in the SDK bin folder.
@@ -145,7 +145,7 @@ However, doing it without any documentation, where the names of the functions an
 As it is not possible to do it in a reasonable amount of time, I decided to focus on fuzzing the virtual machine.
 This is described in the section~\ref{sec:fuzzing}.
 
-\subsection{Communication between the watch and the phone} \label{subsec:communication-watch-phone}
+\section{Communication between the watch and the phone} \label{subsec:communication-watch-phone}
 
 Garmin has multiple apps for managing the watch and the data.
 As such, it is interesting to analyse the communication between them and the watch.

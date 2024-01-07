@@ -1,5 +1,5 @@
-\section{Threat analysis}
-\subsection{Focus of the analysis}
+\chapter{Threat analysis}
+\section{Focus of the analysis}
 The amount of software, watch models, and the fact that firmware is being constantly developed makes it infeasible to cover everything in a single publication.
 I decided to focus on the analysis of the third party apps, as it is the most interesting topic and unique to Garmin devices.
 The previous research found multiple vulnerabilities in the third party apps runtime affecting over a hundred devices\cite{broken-vm,compromising-garmin-watches}.
@@ -7,7 +7,7 @@ Moreover, both of the articles mention that the analysis was far from being comp
 Even though Garmin software is a closed source, the researchers were able to find multiple problems in the runtime environment.
 This suggests it is worth investigating further, as there might be potentially more bugs in the software.
 
-\subsection{Attack surface}
+\section{Attack surface}
 As the focus of the report is third party apps, the attack surface is limited to the apps and the store.
 More precisely, for the attack surface, I will focus on the installation of malicious apps.
 If the adversary is able to install a malicious app on the watch, it is possible to access sensitive user data and possibly tamper with it.
