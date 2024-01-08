@@ -1,5 +1,5 @@
-\section{Security of Connect IQ store}
-\subsection{Preliminary analysis}
+\chapter{Security of Connect IQ store}
+\section{Preliminary analysis}
 Application allows the users to download third party apps to the watch.
 The user can select an app to install it.
 
@@ -13,7 +13,7 @@ As the analysis of the Android application was not the main focus of the report,
 However, it was necessary to have a basic understanding of the app to be able to analyze the communication between the watch and the phone.
 This is described in the section~\ref{subsec:communication-watch-phone}.
 
-\subsection{App decompilation}
+\section{App decompilation}
 I decompiled the app with JADX. The app is obfuscated.
 
 I couldn't find any code that would be responsible for checking the certificate of the downloaded app.
@@ -22,9 +22,9 @@ I was looking for keywords such as the library that was used during a build proc
 Probably there is not much of a point to check the certificate on the phone, assuming that the watch is doing it.
 
 I didn't manage to find the code responsible for downloading the app.
-\subsection{Static analysis}
+\section{Static analysis}
 
-\subsection{Sniffing the traffic}
+\section{Sniffing the traffic}
 To analyze the network security, I tried to sniff the traffic between the phone and Garmin servers.
 I decided to use mitmproxy\footnote{\url{https://mitmproxy.org/}}.
 When dynamically analyzing the app, there are two opitons.
@@ -41,28 +41,28 @@ The minimum supported Android version is 7.
 Those versions require root access to add certificates supported by applications.
 Another option is to modify the app to accept user added certificates.
 
-\subsubsection*{Attempt 1 - Android Unpinner}
+\subsection*{Attempt 1 - Android Unpinner}
 Use Android Unpinner - https://github.com/mitmproxy/android-unpinner
 
 The app starts when connected to mitmproxy.
 However, when trying to log in, it goes back to the welcome screen.
 **Not possible to log in**.
 
-\subsubsection*{Attempt 2 — manually modify the apk and sign again}
+\subsection*{Attempt 2 — manually modify the apk and sign again}
 
 Using Apktool(https://apktool.org/) to unpack the app, modify, and pack again, align zip file and sign with a debug key.
 
 After installing the app, there are some errors with missing resources.
 I did not investigate it further.
 
-\subsubsection*{Attempt 3 — only resign the app.}
+\subsection*{Attempt 3 — only resign the app.}
 Just resigning the app with a debug key.
 The app starts, but when trying to log in it seems to work the same as the app from the attempt \#1.
 
-\subsubsection*{Attempt 4 — use rooted phone}
+\subsection*{Attempt 4 — use rooted phone}
 Short description about the root
 
-\subsection{Network security,}
+\section{Network security,}
 Based on the traffic that went through mitmproxy:
 
 Used domains:
@@ -77,7 +77,7 @@ Used domains:
     \label{fig:mitmproxy-unpinner}
 \end{figure}
 
-\subsection{App sideloading}
+\section{App sideloading}
 - can we install an app that is not signed up by the store?
 - app signed up only by the developer can be install through the cable, but not through the store
 - the watch is probably checking the certificate

@@ -1,5 +1,5 @@
-\section{Fuzzing third party apps} \label{sec:fuzzing}
-\subsection{Introduction}
+\chapter{Fuzzing third party apps} \label{sec:fuzzing}
+\section{Introduction}
 Static analysis of assembly code is a very time-consuming process that requires extensive knowledge.
 Without any documentation, source code provided by the vendor, or any other help, it is extremely difficult to understand the code.
 
@@ -17,7 +17,7 @@ Finding vulnerabilities in the simulator is aimed at achieving two potential obj
 Firstly, it might be possible to escape the sandbox and execute arbitrary code on the host machine.
 Secondly, vulnerabilities in the simulator might be present in the real device as well.
 
-\subsection{Environment setup}
+\section{Environment setup}
 When fuzzing a program, the most basic configuration would be to have a fuzzer and provide it with a program and the starting input.
 Then the fuzzer would run the program with different modifications of the input and check if it crashes.
 
@@ -30,13 +30,13 @@ Moreover, when modifying the input, the virtual machine requires it to be signed
 This means that to test the execution after each modification, the input needs to be signed again.
 
 
-\subsection{Fuzzing solutions}
+\section{Fuzzing solutions}
 One of the most popular fuzzing solutions is AFL++\cite{aflplusplus}.
 It is an improved fork to Google's AFL\footnote{\url{https://github.com/google/AFL}}, which is no longer maintained.
 AFL++ is an open-source tool for fuzzing a wide range of software.
 It is coupled with instrumentation-guided genetic algorithm, having a possibility to be extended for different use cases.
 
-\subsection{Fuzzing process}
+\section{Fuzzing process}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth]{../../images/fuzzer-diagram}
@@ -46,7 +46,7 @@ It is coupled with instrumentation-guided genetic algorithm, having a possibilit
 
 The fuzzer consists of four main components: Mutator, Simulator, MonkeyDo, and Oracle.
 The diagram of the fuzzer is presented in Figure~\ref{fig:fuzzer-diagram}.
-\subsubsection*{Mutator}
+\subsection*{Mutator}
 \begin{lstlisting}[caption={Pseudocode of the mutating algorithm},captionpos=b,label={lst:mutator},language=Python]
 originalApp = load("seed_app.prg")
 currentApp = originalApp
@@ -83,7 +83,7 @@ To make the process more efficient, the mutator does not revert the whole mutati
 Using divide and conquer approach, it is possible to find the byte that broke the application faster.
 
 
-\subsubsection*{Simulator}
+\subsection*{Simulator}
 %\begin{figure}
 %    \centering
     \begin{figure}[b]{0.39\textwidth}
@@ -108,12 +108,12 @@ Example output of the simulator is presented in Figure~\ref{fig:simulator-signat
 Additionally, the component detects when the simulator crashes.
 This information is used by the Oracle component to determine if a bug has been found.
 
-\subsubsection*{MonkeyDo}
+\subsection*{MonkeyDo}
 
 
-\subsubsection*{Oracle}
+\subsection*{Oracle}
 
-\subsection{Fuzzing results}
+\section{Fuzzing results}
 
 \begin{figure}[h]
     \centering
