@@ -25,12 +25,18 @@ The simulator is supposed to guarantee proper isolation, so escaping the sandbox
 Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
 \section{Permissions}
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../../images/garmin-app-manifest}
+    \caption{Garmin third-party app manifest}
+    \label{fig:garmin-app-manifest}
+\end{figure}
 Third party apps can interact with the watch by using the API provided by the SDK.
 The API is divided into several modules, each of them providing different functionality.
 Some of those functionalities can be considered sensitive, such as GPS location, heart rate, or access to the internet.
 Because of that, Garmin implemented a permission system, where different permissions grant access to different modules.
 The app has to define in the manifest file which permissions it requires, and the user has to accept them before installing the app.
+The manifest file is presented in the figure~\ref{fig:garmin-app-manifest}.
 The system offers some granularity, and can give the user a general overview of what the app can do.
 However, some, potentially sensitive modules don't require any permissions.
 For example, the app can access some basic activity data such as heart rate, steps, calories without any permissions.
@@ -117,7 +123,7 @@ The only difference is that the old signature is replaced with the new one.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\linewidth]{../../images/app-hex-editor-hello-world}
-    \caption{Simulator decompilation}
+    \caption{Prg file in hex editor}
     \label{fig:hello-world}
 \end{figure}
 
@@ -159,7 +165,7 @@ Garmin has multiple apps for managing the watch and the data.
 As such, it is interesting to analyse the communication between them and the watch.
 I analyzed the Manifest files in Connect IQ Store and Garmin Connect apps.
 Both of them use Bluetooth permissions to connect with the watch.
-Additionally, they define Garmin custom permissions as can be seen in the figure~\ref{fig:connect-iq-store-permissions}.
+Additionally, they define Garmin custom permissions as can be seen in the figure~\ref{fig:connect-iq-declared-permissions}.
 The permissions have set protection level to `signature`(0x2), which means that only apps signed with the same key can use them.
 They are used to be able to receive specific broadcasts, probably to communicate with themselves.
 It is a functionality provided by Android and should offer an appropriate level of security.
@@ -168,7 +174,7 @@ It is a functionality provided by Android and should offer an appropriate level 
     \centering
     \includegraphics[width=1\linewidth]{../../images/android-declared-permissions}
     \caption{Declared permissions by Connect IQ Store}
-    \label{fig:connect-iq-store-permissions}
+    \label{fig:connect-iq-declared-permissions}
 \end{figure}
 
 When it comes to third party apps, they can communicate with the phone by using the API provided by the SDK\@.
@@ -217,4 +223,4 @@ As Garmin already uses custom permissions for communication between their apps, 
 According to Android documentation,\cite{android-broadcasts} it is possible to send broadcasts that can be only received by apps with specific permissions.
 It is also possible to define a custom permission that can be requested by other apps.
 However, custom permissions have to be already defined when such an app is being installed.
-Because of that, it is probably not a viable option for Garmin.
+This is not always the case, and because of that, it is probably not a viable option for Garmin.

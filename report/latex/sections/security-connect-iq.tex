@@ -1,19 +1,31 @@
 \chapter{Security of Connect IQ store}
 \section{Preliminary analysis}
-Application allows the users to download third party apps to the watch.
-The user can select an app to install it.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\linewidth]{../../images/connect-iq-app-permissions}
+    \caption{Connect IQ - third-party app permissions request}
+    \label{fig:connect-iq-store-permissions}
+\end{figure}
+Connect IQ store allows the users to download third party apps to the watch.
+Before the app is downloaded, the user is presented with the information about permissions that the app requires, as presented in Figure~\ref{fig:connect-iq-store-permissions}.
 
-Notes:
-\begin{itemize}
-    \item the phone downloads the app
-    \item sends it to the watch via BT
-\end{itemize}
+Based on the experiments with the watch, it seems that the app is downloaded to the phone and then sent to the watch via Bluetooth.
 
 As the analysis of the Android application was not the main focus of the report, it does not go very deep.
 However, it was necessary to have a basic understanding of the app to be able to analyze the communication between the watch and the phone.
 This is described in the section~\ref{subsec:communication-watch-phone}.
 
 \section{App decompilation}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{../../images/connect-iq-apks}
+    \caption{Connect IQ - Pulled apk files}
+    \label{fig:connect-iq-apks}
+\end{figure}
+I installed the app on the phone and used $ADB$ to pull the apk files.
+The files are presented in Figure~\ref{fig:connect-iq-apks}.
+The app consists of multiple files, but the main one is \texttt{base.apk}.
+It contains all JVM bytecode.
 I decompiled the app with JADX. The app is obfuscated.
 
 I couldn't find any code that would be responsible for checking the certificate of the downloaded app.
@@ -42,7 +54,7 @@ Those versions require root access to add certificates supported by applications
 Another option is to modify the app to accept user added certificates.
 
 \subsection*{Attempt 1 - Android Unpinner}
-Use Android Unpinner - https://github.com/mitmproxy/android-unpinner
+Use Android Unpinner - \footnote{\url{https://github.com/mitmproxy/android-unpinner}}
 
 The app starts when connected to mitmproxy.
 However, when trying to log in, it goes back to the welcome screen.
@@ -50,7 +62,7 @@ However, when trying to log in, it goes back to the welcome screen.
 
 \subsection*{Attempt 2 — manually modify the apk and sign again}
 
-Using Apktool(https://apktool.org/) to unpack the app, modify, and pack again, align zip file and sign with a debug key.
+Using Apktool\footnote{\url{https://apktool.org/}} to unpack the app, modify, and pack again, align zip file and sign with a debug key.
 
 After installing the app, there are some errors with missing resources.
 I did not investigate it further.
@@ -60,7 +72,8 @@ Just resigning the app with a debug key.
 The app starts, but when trying to log in it seems to work the same as the app from the attempt \#1.
 
 \subsection*{Attempt 4 — use rooted phone}
-Short description about the root
+I used my old, no longer used phone — Samsung S20.
+To root the phone, I followed the instructions found on the XDA Forums\footnote{\url{https://xdaforums.com/t/how-to-exynos-snapdragon-root-s20-series-and-upgrade-firmware.4079353/}}.
 
 \section{Network security,}
 Based on the traffic that went through mitmproxy:
