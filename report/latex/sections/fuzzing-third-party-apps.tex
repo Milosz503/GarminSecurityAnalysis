@@ -84,22 +84,22 @@ Using divide and conquer approach, it is possible to find the byte that broke th
 
 
 \subsubsection*{Simulator}
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.39\textwidth}
+%\begin{figure}
+%    \centering
+    \begin{figure}[b]{0.39\textwidth}
         \centering
-        \includegraphics[width=1\linewidth]{../../images/simulator-seed-app}
+        \includegraphics[width=0.39\linewidth]{../../images/simulator-seed-app}
         \caption{Simulator running seed app}
         \label{fig:simulator-seed-app}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.6\textwidth}
+    \end{figure}
+    \begin{figure}[b]{0.6\textwidth}
         \centering
-        \includegraphics[width=1\linewidth]{../../images/simulator-signature-failed}
+        \includegraphics[width=0.6\linewidth]{../../images/simulator-signature-failed}
         \caption{Simulator output when signature verification fails}
         \label{fig:simulator-signature-failed}
-    \end{subfigure}
-    \caption{Simulator}
-\end{figure}
+    \end{figure}
+%    \caption{Simulator}
+%\end{figure}
 The simulator component is responsible for running the simulator executable.
 In Figure~\ref{fig:simulator-seed-app}, the simulator is running the seed application.
 The component monitors the output of the simulator, which can be used by the Oracle to decide if provided input has been executed successfully.

@@ -1,0 +1,93 @@
+\RequirePackage{fix-cm} % fix some latex issues see: http://texdoc.net/texmf-dist/doc/latex/base/fixltx2e.pdf
+\documentclass[ openright,titlepage,numbers=noenddot,headinclude,%1headlines,% letterpaper a4paper
+                footinclude=true,cleardoublepage=empty,abstractoff, % <--- obsolete, remove (todo)
+                BCOR=5mm,paper=a4,fontsize=11pt,%11pt,a4paper,%
+                ngerman,american,%
+                ]{scrreprt}
+
+\input{classicthesis-config}
+
+
+
+% *********************************************************
+% Change these values to match your group and project title
+% *********************************************************
+\def\myDegree{Project Report}
+\def\myTitle{The Project Title}
+\def\mySubtitle{\ }
+\def\authors{
+  {Student One/1234567890},
+  {Student Two/2134567890},
+  {Student Three/1324567890},
+  {Student Four/1243567890}}
+\def\myShortNames{Student 1, 2, 3 \& 4}
+\def\myGroup{The Group Name}
+
+%********************************************************************
+% Bibliographies
+%*******************************************************
+%\addbibresource{references.bib}
+%\addbibresource[label=ownpubs]{AMiede_Publications.bib}
+%********************************************************************
+% Hyphenation
+%*******************************************************
+\hyphenation{Micro-soft Web-RTC Chun-ky-Spread Ka-dem-lia Pas-try mac-OS block-chain time-stamp Et-he-re-um}
+
+% ********************************************************************
+% GO!GO!GO! MOVE IT!
+%*******************************************************
+\begin{document}
+
+\frenchspacing
+\raggedbottom
+\selectlanguage{american} % american ngerman
+%\renewcommand*{\bibname}{new name}
+%\setbibpreamble{}
+\pagenumbering{roman}
+\pagestyle{plain}
+%********************************************************************
+% Frontmatter
+%*******************************************************
+\include{FrontBackmatter/DirtyTitlepage}
+\include{FrontBackmatter/Titlepage}
+\include{FrontBackmatter/Titleback}
+\pagestyle{scrheadings}
+\cleardoublepage\include{FrontBackmatter/Contents}
+%********************************************************************
+% Mainmatter
+%*******************************************************
+\cleardoublepage\pagenumbering{arabic}
+\cleardoublepage
+
+
+\include{sections/introduction}
+\include{sections/related-work}
+\include{sections/threat-analysis}
+\include{sections/security-connect-iq}
+\include{sections/security-third-party-apps}
+\include{sections/fuzzing-third-party-apps}
+\include{sections/privacy}
+\include{sections/conclusion}
+
+
+\bibliography{references}
+\bibliographystyle{plain}
+
+
+
+%********************************************************************
+% Other Stuff in the Back
+%*******************************************************
+%\cleardoublepage\include{FrontBackmatter/Bibliography}
+%\bibliography{references}
+%\bibliographystyle{plain}
+% ********************************************************************
+% Game Over: Restore, Restart, or Quit?
+%*******************************************************
+\end{document}
+% ********************************************************************
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
