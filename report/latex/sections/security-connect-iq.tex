@@ -6,13 +6,17 @@
     \caption{Connect IQ - third-party app permissions request}
     \label{fig:connect-iq-store-permissions}
 \end{figure}
-Connect IQ store allows the users to download third party apps to the watch.
+Connect IQ store allows the users to browse and download third-party apps and watch faces to the watch.
+The applications have descriptions and screenshots that can be added by the developers.
+Additionally, users can write reviews and rate the apps.
+Each app has information about the average rating and the number of downloads.
 Before the app is downloaded, the user is presented with the information about permissions that the app requires, as presented in Figure~\ref{fig:connect-iq-store-permissions}.
+The store also allows the users to create their own simple watch faces.
 
 Based on the experiments with the watch, it seems that the app is downloaded to the phone and then sent to the watch via Bluetooth.
 
-As the analysis of the Android application was not the main focus of the report, it does not go very deep.
-However, it was necessary to have a basic understanding of the app to be able to analyze the communication between the watch and the phone.
+The analysis of the store does not go very deep, as I decided to focus more on the third party apps.
+However, it was necessary to have a basic understanding of the store, especially to analyze the communication between the watch and the phone.
 This is described in the section~\ref{subsec:communication-watch-phone}.
 
 \section{App decompilation}
@@ -22,18 +26,19 @@ This is described in the section~\ref{subsec:communication-watch-phone}.
     \caption{Connect IQ - Pulled apk files}
     \label{fig:connect-iq-apks}
 \end{figure}
-I installed the app on the phone and used $ADB$ to pull the apk files.
-The files are presented in Figure~\ref{fig:connect-iq-apks}.
+I installed the app on the phone and used $ADB$ to pull the apk files, that are presented in Figure~\ref{fig:connect-iq-apks}.
 The app consists of multiple files, but the main one is \texttt{base.apk}.
-It contains all JVM bytecode.
-I decompiled the app with JADX. The app is obfuscated.
+It contains all JVM bytecode, which is the main focus of the analysis.
+I decompiled the app with JADX decompiler\footnote{\url{https://github.com/skylot/jadx}}.
 
-I couldn't find any code that would be responsible for checking the certificate of the downloaded app.
-I was looking for keywords such as the library that was used during a build process, SHA1, RSA\@.
+The app is obfuscated, which makes it more difficult to analyze.
+I was interested to find the code responsible for downloading the app to the phone and sending it to the watch.
+Searching with several keywords, I was not able to find any code that would be responsible for checking the certificate of the downloaded app.
+I was looking for names such as the library that was used to sign the app, SHA1, RSA\@.
 
-Probably there is not much of a point to check the certificate on the phone, assuming that the watch is doing it.
-
-I didn't manage to find the code responsible for downloading the app.
+Assuming that the app is checking the certificate, it is not necessary for the phone to check it as well.
+This is way it should be even safer, as the phone would be an additional attack surface.
+With this conclusion, I decided to experiment later with the installation of an app that was not signed by the store in section~\ref{app-sideloading}.
 \section{Static analysis}
 
 \section{Sniffing the traffic}
@@ -90,7 +95,19 @@ Used domains:
     \label{fig:mitmproxy-unpinner}
 \end{figure}
 
+The store displays content that can be added by the users.
+The developer creates a description of the app, screenshots, and other information.
+Other users can comment on the app.
+I looked into it, to see how it is handled.
+If the text was parsed by the app, it could be a potential vector of attack.
+However, it seems that everything is sent as a plain text, without any parsing on the phone.
+
+\section{Communication between the watch and the phone}
+I considered analyzing the communication between the watch and the phone.
+However, it uses Bluetooth LE Secure Connections.
+
 \section{App sideloading}
+\label{app-sideloading}
 - can we install an app that is not signed up by the store?
 - app signed up only by the developer can be install through the cable, but not through the store
 - the watch is probably checking the certificate
