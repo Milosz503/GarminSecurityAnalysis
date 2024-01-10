@@ -31,7 +31,8 @@ The app consists of multiple files, but the main one is \texttt{base.apk}.
 It contains all JVM bytecode, which is the main focus of the analysis.
 I decompiled the app with JADX decompiler\footnote{\url{https://github.com/skylot/jadx}}.
 
-The app is obfuscated, which makes it more difficult to analyze.
+The app is obfuscated.
+It is a good practice as it makes the app size smaller and makes it more difficult to reverse engineer.
 I was interested to find the code responsible for downloading the app to the phone and sending it to the watch.
 Searching with several keywords, I was not able to find any code that would be responsible for checking the certificate of the downloaded app.
 I was looking for names such as the library that was used to sign the app, SHA1, RSA\@.

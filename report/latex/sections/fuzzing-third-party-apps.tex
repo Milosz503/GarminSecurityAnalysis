@@ -44,13 +44,13 @@ It is coupled with instrumentation-guided genetic algorithm, having a possibilit
     \label{fig:fuzzer-diagram}
 \end{figure}
 
-The fuzzer consists of four main components: Mutator, Simulator, MonkeyDo, and Oracle.
-The fuzzing process is presented in Figure~\ref{fig:fuzzer-diagram}.
+The fuzzer consists of four main components: Mutator, Simulator, MonkeyDo, and Oracle, as presented in Figure~\ref{fig:fuzzer-diagram}.
 The fuzzing is performed in an iterative manner.
 The Mutator generates a new input, then Oracle tests the execution of the input.
 Based on the result, the Mutator either mutates the current input or reverts the previous mutation.
 This way, the input oscillates closely between two states: one that barely works and another one that does not run successfully.
 With this continuous modification of the input, the fuzzer explores different variations of the bytecode until it finds one that is not handled correctly by the virtual machine.
+To make it possible to reproduce the steps, the fuzzer uses a random generator with a fixed seed, defined at the beginning of the script.
 
 
 \subsection*{Mutator}
@@ -143,9 +143,40 @@ This way, it can be determined if the error is caused by the previous applicatio
 
 \section{Fuzzing results}
 
+For the fuzzing, I created a simple application that prints a message $Okay$ when executed.
+The application is based on an example provided by the SDK, called $Confirmation Dialog$.
+
+I was running the fuzzer with at most 50 iterations, so that it would be possible to easily reproduce all the steps.
+Each run of the fuzzer started with a different seed for random generator.
+
+After the first run, I noticed that sometimes there would be an error message: $Permissions required$.
+Probably some of the modifications caused the application to access parts of the SDK that it did not have permission to.
+As such, I decided to modify the application to request all permissions.
+This way, it would be possible to detect potential bugs in all parts of the SDK\@.
+
+With this configuration, the fuzzer was able to find an input that caused the simulator to crash.
+Roughly every second or third run of the fuzzer a new input was found.
+The crash was caused by a segmentation fault, as presented in Figure~\ref{fig:simulator-crash}.
+This is a bug in the simulator, as it should not crash when executing an application.
+However, it is difficult to assess if this bug can be exploited.
+Potentially, it might be possible to execute arbitrary code on the host machine.
+However, it would require a further investigation.
+
+Additionally, during the fuzzing, I noticed a weird behaviour of the simulator.
+Once, when the application was executed, the simulator opened a window with a profiler, as presented in Figure~\ref{fig:simulator-bug-profiler}.
+
+
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\linewidth]{../../images/simulator-crash}
     \caption{Simulator crash}
     \label{fig:simulator-crash}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../../images/simulator-bug-profiler}
+    \caption{Weird simulator behaviour}
+    \label{fig:simulator-bug-profiler}
 \end{figure}
