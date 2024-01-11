@@ -1,4 +1,4 @@
-\chapter{Fuzzing third party apps} \label{sec:fuzzing}
+\chapter{Fuzzing third-party apps} \label{sec:fuzzing}
 \section{Introduction}
 Static analysis of assembly code is a very time-consuming process that requires extensive knowledge.
 Without any documentation, source code provided by the vendor, or any other help, it is extremely difficult to understand the code.
@@ -87,7 +87,7 @@ It does that by mutating the original(seed) application and signing it again as 
 The pseudocode of the mutating algorithm is presented in Listing~\ref{lst:mutator}.
 Depending on the result of the previous execution, the mutator either mutates the current application or reverts the previous mutation.
 To make the process more efficient, the mutator does not revert the whole mutation, but only half of it.
-Using divide and conquer approach, it is possible to find the byte that broke the application faster.
+Using the divide-and-conquer approach, it is possible to find the byte that broke the application faster.
 
 
 \subsection*{Simulator}

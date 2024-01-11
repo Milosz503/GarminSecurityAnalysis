@@ -8,8 +8,8 @@ As the technology develops, the devices get more affordable and are able to trac
 While it improves the insights into health and fitness tracking, it also means that it collects more sensitive data about the users.
 
 Garmin fitness watches can accompany the users day and night, being able to last even over a week on a single charge.
-The company has a wide range of options, having released over 100 different watches with third party apps support\cite{garmin-connect-iq-devices}.
-The devices are equipped with a large number of sensors such as heart rate, pulse oximeter, temperature, gps, compass, accelerometer, gyroscope, altimeter, barometer, light sensor.
+The company has a wide range of options, having released over 100 different watches with third-party apps support\cite{garmin-connect-iq-devices}.
+The devices are equipped with a large number of sensors such as heart rate, pulse oximeter, temperature, GPS, compass, accelerometer, gyroscope, altimeter, barometer, light sensor.
 This allows collecting and calculating an enormous amount of different sensitive metrics.
 As a result, the potential consequences of unauthorized access to the user's data are severe.
 
@@ -19,13 +19,13 @@ There are multiple apps available for iPhone and Android phones to manage the wa
 This means that the data is being sent over a Bluetooth protocol from the watch to the phone.
 Additionally, Garmin encourages users to synchronize the data with their cloud.
 
-In case the provided software does not fulfill users' requirements, it is also possible to install third party apps on the watch.
+In case the provided software does not fulfill users' requirements, it is also possible to install third-party apps on the watch.
 Garmin maintains an ecosystem of tools for the developers to create apps and publish them in a Garmin store.
-It makes the watch extensible and more universal, but it also allows for a third party developer to gain access to some of the user data.
+It makes the watch extensible and more universal, but it also allows for a third-party developer to gain access to some of the user data.
 
 The described software offers a powerful toolset for the users to analyse their fitness data.
 However, it also creates a large number of possible vectors of attack.
-It is also important to notice that the Garmin software is not open source, which makes it more difficult to analyse the security of the software.
+It is also important to notice that the Garmin software is not open source, which makes it more difficult to analyse its security.
 Garmin provides a contact form on their website to report security vulnerabilities.
 Unfortunately, they do not offer a bounty program.
 
@@ -35,10 +35,10 @@ Overall, during the analysis, the following privacy and security concerns were f
 \begin{itemize}
     \item Garmin uses deprecated SHA-1 for app signing
     \item Android apps installed on the phone, without any permissions can detect that the user uses Garmin devices and the type of the device
-    \item Communication between the third party apps and their companion apps are in plain text, available to all apps installed on the Android phone.
+    \item Communication between the third-party apps and their companion apps are in plain text, available to all apps installed on the Android phone.
     I created a proof of concept app that can eavesdrop on the messages sent to the phone.
-    \item Permission system of the third party watch apps is not as well separated into different categories as it is in Android, iOS phones.
-    \item Fuzzy testing suggests that it may be possible to escape the virtual machine running the third party apps.
+    \item Permission system of the third-party watch apps is not as well separated into different categories as it is in Android, iOS phones.
+    \item Fuzzy testing suggests that it may be possible to escape the virtual machine running the third-party apps.
 \end{itemize}
 
 
@@ -47,7 +47,7 @@ Garmin provides multiple mobile apps to manage the watch and the data.
 \begin{itemize}
     \item Garmin Connect — the main app for managing the watch and the data.
     \item Garmin Explore — app for managing the watch and the data, focused on the offline usage.
-    \item Garmin Connect IQ Store — app store for third party apps, that can be installed on the watch.
+    \item Garmin Connect IQ Store — app store for third-party apps, that can be installed on the watch.
 \end{itemize}
 
 If the user decides to synchronize the data with the cloud, it is sent to the Garmin Connect services.
@@ -73,7 +73,7 @@ For the analysis the decision was made to use Linux operating systems as it is a
 The chosen distribution was Kali Linux because it comes with already preinstalled toolset.
 
 The testing is executed on the watch Garmin Fenix 7S Pro, released in May 2023.
-The third party applications are investigated when using Connect IQ 6.3 SDK, released in August 2023.
+The third-party applications are investigated when using Connect IQ 6.3 SDK, released in August 2023.
 
 Garmin supports both Android and iOS phones for managing the watch.
 I focused on the Android version of the software.
@@ -84,4 +84,24 @@ For the purpose of the analysis, when Garmin watches are mentioned, this report 
 Other devices may offer different hardware and software configurations.
 
 
+\section{Report structure}
+TODO
 
+\section{Related work}
+
+Different attempts at the security analysis of Garmin software are available online.
+There were attempts to ethically hack a Garmin watch\cite{kth-ethical-hacking,kth-audit}, analyzing different vectors of attack such as the Garmin Connect website, watch communication, and third-party apps.
+However, they did not go deep into any of those topics.
+
+Others tried to reverse engineer Garmin’s Virtual Machine and do a security analysis of the environment\cite{broken-vm,compromising-garmin-watches}.
+They were able to get access to the firmware of the watch.
+With the help of unofficial documentation of the firmware format\cite{firmware-format}, they proceeded to reverse engineer the bytecode.
+During the analysis, they determined which parts of the code are responsible for the third-party apps' execution.
+Thereafter, they found multiple vulnerabilities concerning the app runtime that have been disclosed to Garmin.
+Some of them affected over a hundred devices for around 7 years.
+
+While they explored the specific topic deeper, there is still a long list of things that could be analyzed in more detail.
+Previous attempts used an available beta firmware for the analysis and used watches released over 4 years ago.
+Since then, many new models have been introduced as well as new firmware versions with new features and expanded developer SDK.
+
+Considering the size of Garmin's ecosystem and the number of different components, the existing, publicly available analysis is far from being comprehensive.

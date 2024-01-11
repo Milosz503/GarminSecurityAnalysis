@@ -1,5 +1,5 @@
 
-\chapter{Security of third party apps}
+\chapter{Security of third-party apps}
 
 \section{App runtime}
 
@@ -31,7 +31,7 @@ Additionally, there is a chance that parts of the code are reused in the firmwar
     \caption{Garmin third-party app manifest}
     \label{fig:garmin-app-manifest}
 \end{figure}
-Third party apps can interact with the watch by using the API provided by the SDK.
+Third-party apps can interact with the watch by using the API provided by the SDK.
 The API is divided into several modules, each of them providing different functionality.
 Some of those functionalities can be considered sensitive, such as GPS location, heart rate, or access to the internet.
 Because of that, Garmin implemented a permission system, where different permissions grant access to different modules.
@@ -52,10 +52,12 @@ As it was mentioned, it is recommended to use Visual Studio Code with the extens
 During the compilation, the code is translated to mid-level intermediate representation (MIR).
 The files containing the representations could be used for better understanding of the final artefact.
 
+(TODO: elaborate that a PRG file is created)
+
 Visual Studio calls the compiler, which is a jar file called \textit{monkeybrains.jar}.
 The compiler is written in Java, which makes the analysis of the code relatively straightforward.
 Nonetheless, it is a complicated process consisting of several stages.
-For the analysis, I decided to use JADX decompiler\footnote{\url{https://github.com/skylot/jadx}}.
+For the analysis, I decided to use the JADX decompiler\footnote{\url{https://github.com/skylot/jadx}}.
 
 After loading the jar file, I noticed that a large part of the relevant code is not obfuscated.
 Then I proceeded to analyse the code.
@@ -65,7 +67,7 @@ The following classes are of particular interest:
     \item \texttt{com.garmin.connectiq.common.monkeyc.AssemblerOpcode} — contains a list of instructions in the final bytecode.
     \item \texttt{com.garmin.connectiq.common.signing.SigningUtils} — class responsible for signing the app, described in more detail in the section~\ref{subsec:signing}.
 \end{itemize}
-Additionally, SDK provides a mapping of all API methods to the number values, which is probably some type of address.
+Additionally, the SDK provides a mapping of all API methods to the number values, which is probably some type of address.(TODO: improve)
 
 I was able to find the code responsible for signing the application.
 It is described in more detail in the section~\ref{subsec:signing}.
@@ -85,7 +87,7 @@ The signing algorithm uses SHA1 hash of the bytecode that is signed with a priva
 The key is 4096 long, which is more than recommended.
 For the signing, conventions described in PKCS \#1 v2.2 are used\cite{java-signature,pkcs}.
 The pseudocode of the signing algorithm is presented in the listing~\ref{lst:signing}.
-Store signature is generated in a similar way, does not include the modulus and exponent, and uses a different magic number.
+The signature computed by the store is generated in a similar way, does not include the modulus and exponent, and uses a different magic number.
 The store probably uses the public key in the developer signature to verify and save it after the first upload of the app.
 \begin{lstlisting}[caption={Pseudocode of the signing algorithm, developer signature},captionpos=b,label={lst:signing},language=Python]
     def sign_with_developer_signature():
@@ -116,7 +118,7 @@ However, the function has been already broken and in the upcoming years new atta
 \label{sec:modifying-the-executable}
 To perform dynamic analysis of the virtual machine, it is useful to be able to edit the executable.
 However, after changing the bytecode, it is necessary to sign the executable again.
-With the knowledge gained from the previous section, I created a kotlin script that signs the app again.
+With the knowledge gained from the previous section, I created a Kotlin script that signs the app again.
 
 The code follows the same instructions as the original method in listing~\ref{lst:signing}.
 The only difference is that the old signature is replaced with the new one.
@@ -129,7 +131,7 @@ The only difference is that the old signature is replaced with the new one.
 \end{figure}
 
 To verify that the script works correctly, I created a simple app that shows a message 'Hello world'.
-Then I opened the prg file in a hex editor and searched for the message, as presented in the figure~\ref{fig:hello-world}.
+Then I opened the PRG file in a hex editor and searched for the message, as presented in the figure~\ref{fig:hello-world}.
 Consequently, I modified the string and signed the app with the created script.
 After installing the app on the watch and the simulator, the new message was displayed.
 When trying to install the app without the new signature, the watch and the simulator would display an error message.
@@ -152,7 +154,7 @@ Fortunately, Ghidra has an option to analyse and decompile the code to C\@.
     \label{fig:concept}
 \end{figure}
 
-The header of the third party apps is tagged with value `0xD000D000`\cite{broken-vm}.
+The header of the third-party apps is tagged with value `0xD000D000`\cite{broken-vm}.
 Searching for it in the simulator binary reveals two references.
 
 From this point, it would be theoretically possible to analyse the code and reverse engineer the virtual machine.
@@ -178,7 +180,7 @@ It is a functionality provided by Android and should offer an appropriate level 
     \label{fig:connect-iq-declared-permissions}
 \end{figure}
 
-When it comes to third party apps, they can communicate with the phone by using the API provided by the SDK\@.
+When it comes to third-party apps, they can communicate with the phone by using the API provided by the SDK\@.
 Garmin created SDK for Android and iOS that allows to create a companion mobile app for the watch app.
 They created an example of watch and Android app that communicate with each other\footnote{\url{https://github.com/garmin/connectiq-android-sdk}}.
 The Android SDK uses Broadcasts under the hood to communicate with Garmin Connect app.
