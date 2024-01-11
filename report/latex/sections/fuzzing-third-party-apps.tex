@@ -36,6 +36,8 @@ It is an improved fork to Google's AFL\footnote{\url{https://github.com/google/A
 AFL++ is an open-source tool for fuzzing a wide range of software.
 It is coupled with instrumentation-guided genetic algorithm, having a possibility to be extended for different use cases.
 
+(TODO: explain that I decided to write my own)
+
 \section{Fuzzing process}
 \begin{figure}[h]
     \centering
@@ -143,29 +145,16 @@ This way, it can be determined if the error is caused by the previous applicatio
 
 \section{Fuzzing results}
 
-For the fuzzing, I created a simple application that prints a message $Okay$ when executed.
-The application is based on an example provided by the SDK, called $Confirmation Dialog$.
+For the fuzzing, I created a simple application that prints a message \textit{Okay} when executed.
+The application is based on an example provided by the SDK, called \textit{Confirmation Dialog}.
 
-I was running the fuzzer with at most 50 iterations, so that it would be possible to easily reproduce all the steps.
-Each run of the fuzzer started with a different seed for random generator.
+I was running the fuzzer with at most 50 iterations, so that it would be possible to easily reproduce all steps.
+Each run of the fuzzer started with a different seed for a random generator.
 
-After the first run, I noticed that sometimes there would be an error message: $Permissions required$.
-Probably some of the modifications caused the application to access parts of the SDK that it did not have permission to.
-As such, I decided to modify the application to request all permissions.
+After the first run, I noticed that sometimes there would be an error message: \textit{Permissions required}.
+Probably some modifications caused the application to access parts of the SDK that it did not have permission to.
+After this finding, I decided to modify the application to request all permissions.
 This way, it would be possible to detect potential bugs in all parts of the SDK\@.
-
-With this configuration, the fuzzer was able to find an input that caused the simulator to crash.
-Roughly every second or third run of the fuzzer a new input was found.
-The crash was caused by a segmentation fault, as presented in Figure~\ref{fig:simulator-crash}.
-This is a bug in the simulator, as it should not crash when executing an application.
-However, it is difficult to assess if this bug can be exploited.
-Potentially, it might be possible to execute arbitrary code on the host machine.
-However, it would require a further investigation.
-
-Additionally, during the fuzzing, I noticed a weird behaviour of the simulator.
-Once, when the application was executed, the simulator opened a window with a profiler, as presented in Figure~\ref{fig:simulator-bug-profiler}.
-
-
 
 \begin{figure}[h]
     \centering
@@ -174,9 +163,34 @@ Once, when the application was executed, the simulator opened a window with a pr
     \label{fig:simulator-crash}
 \end{figure}
 
+
+
+With this configuration, the fuzzer was able to consistently find an input that was crashing the simulator.
+Roughly every second or third run of the fuzzer a new such input was found.
+The crash was caused by a segmentation fault, as presented in Figure~\ref{fig:simulator-crash}.
+This is a bug in the simulator, as it should not crash when executing an application.
+However, it is challenging to assess if this bug can be exploited.
+Potentially, it might be possible to execute arbitrary code on the host machine.
+However, it would require a further investigation into the machine code of the simulator.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{../../images/simulator-bug-profiler}
     \caption{Weird simulator behaviour}
     \label{fig:simulator-bug-profiler}
 \end{figure}
+
+Additionally, I tried to fuzz the application without any permissions, to compare the results.
+It seemed that the crashes were happening more rarely.
+However, during one of the runs, I noticed a strange behaviour of the simulator.
+Once, when the application was executed, the simulator started profiling and opened a window with the profiler, as presented in Figure~\ref{fig:simulator-bug-profiler}.
+The application was executed, printed the message \textit{Okay}, and then crashed.
+I can see two possible explanations for this behaviour.
+Firstly, probably the most likely, there is a bug during the initial parsing/loading of the application that triggers the profiler.
+Or maybe a no documented feature of the simulator.
+Secondly, there is a chance that the application started the profiler from the virtual machine.
+
+(TODO: write about testing those apps on the watch)
+
+Those results show that there are bugs in the simulator.
+This opens an opportunity to continue the investigation to assess if it is possible to find any vulnerabilities that can be exploited.
