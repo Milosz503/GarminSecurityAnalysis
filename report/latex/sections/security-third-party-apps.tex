@@ -49,10 +49,13 @@ Then every watch face can access all this data if it requests `Complications` pe
 \section{Building process}
 In order to understand the runtime environment, I started with the analysis of the building process.
 As it was mentioned, it is recommended to use Visual Studio Code with the extension provided by Garmin.
+The program is written in Monkey C language.
+For testing purposes, the app can be run on a simulator or a real device.
+The extension provides a user interface to automatically install the app on the simulator.
+It is also possible to generate a binary PRG file that can be installed on the watch.
+
 During the compilation, the code is translated to mid-level intermediate representation (MIR).
 The files containing the representations could be used for better understanding of the final artefact.
-
-(TODO: elaborate that a PRG file is created)
 
 Visual Studio calls the compiler, which is a jar file called \textit{monkeybrains.jar}.
 The compiler is written in Java, which makes the analysis of the code relatively straightforward.

@@ -53,7 +53,7 @@ Garmin provides multiple mobile apps to manage the watch and the data.
 If the user decides to synchronize the data with the cloud, it is sent to the Garmin Connect services.
 Then it can be accessed through the website or the mobile app.
 
-Additionally, Garmin has developed a proprietary programming language, Monkey C running in a virtual machine for creating third-party apps.
+Additionally, Garmin has developed a proprietary programming language, Monkey C\footnote{\url{https://developer.garmin.com/connect-iq/monkey-c/}} running in a virtual machine for creating third-party apps.
 The developers are provided with an SDK\footnote{\url{https://developer.garmin.com/connect-iq/overview/}}, containing all the necessary tools for creating and testing the apps.
 Monkey C language has an integration with Visual Studio Code through the extension\footnote{\url{https://marketplace.visualstudio.com/items?itemName=garmin.monkey-c}}.
 The apps can be tested either on a real device or on a simulator, provided with the SDK\@.
@@ -67,6 +67,17 @@ After a preliminary analysis, the following scripts and tools were found in the 
     \item monkeydo - executes Connect IQ executable on the simulator
     \item Other scripts: barrelbuild, barreltest, connectiq, era, mdd, monkeyc, monkeygraph, monkeydoc, shell, monkeymotion
 \end{itemize}
+
+\section{Report structure}
+The report structure roughly follows the order of the analysis.
+Firstly, the threat model is described.
+Then the security of the Garmin Connect IQ store is analysed.
+With this knowledge, the security of the third-party apps is investigated.
+This chapter describes the app runtime, building process and the communication between the watch and the phone.
+After that, the fuzzing of the third-party apps is described.
+At this stage, a custom fuzzer was created to test the security of the apps.
+It generated promising results, opening additional opportunities for further research.
+Finally, the privacy of the Garmin software is analysed.(TODO: does it exist?)
 
 \section{Testing environment}
 For the analysis the decision was made to use Linux operating systems as it is a popular choice in the system security community and a large number of materials use it.
@@ -83,9 +94,6 @@ Android is more open and easier to analyse, and I did not have access to Apple d
 For the purpose of the analysis, when Garmin watches are mentioned, this report focuses on Garmin Fenix watches series 7.
 Other devices may offer different hardware and software configurations.
 
-
-\section{Report structure}
-TODO
 
 \section{Related work}
 
