@@ -21,7 +21,7 @@ It would require additional time and there is no guarantee that it would be poss
 
 In the end, I decided to perform the analysis on the simulator provided by Garmin.
 As it runs directly on the computer, it is possible to perform a more in-depth analysis of the software such as dynamic analysis.
-The simulator is supposed to guarantee proper isolation, so escaping the sandbox would be a potential vulnerability.
+The simulator is supposed to guarantee proper isolation, so escaping the sandbox could be a potential vulnerability being a threat to the computer.
 Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
 \section{Permissions}
@@ -44,7 +44,7 @@ Moreover, in February 2023, Garmin introduced a new module: Complications.
 It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.
 While it makes the access to different metrics more flexible and accessible, it also removes the granularity of the permissions.
 Every app can potentially publish very sensitive data, without the user being aware of it.
-Then every watch face can access all this data if it requests `Complications` permission.
+Then every watch face can access all this data if it requests \textit{Complications} permission.
 
 \section{Building process}
 In order to understand the runtime environment, I started with the analysis of the building process.
@@ -53,6 +53,7 @@ The program is written in Monkey C language.
 For testing purposes, the app can be run on a simulator or a real device.
 The extension provides a user interface to automatically install the app on the simulator.
 It is also possible to generate a binary PRG file that can be installed on the watch.
+Before the app can be installed on the watch, it has to be signed by the developer.
 
 During the compilation, the code is translated to mid-level intermediate representation (MIR).
 The files containing the representations could be used for better understanding of the final artefact.
@@ -70,7 +71,8 @@ The following classes are of particular interest:
     \item \texttt{com.garmin.connectiq.common.monkeyc.AssemblerOpcode} — contains a list of instructions in the final bytecode.
     \item \texttt{com.garmin.connectiq.common.signing.SigningUtils} — class responsible for signing the app, described in more detail in the section~\ref{subsec:signing}.
 \end{itemize}
-Additionally, the SDK provides a mapping of all API methods to the number values, which is probably some type of address.(TODO: improve)
+Additionally, the SDK provides a mapping of all API methods to the number values.
+This is probably used by the virtual machine to identify the method that should be called.
 
 I was able to find the code responsible for signing the application.
 It is described in more detail in the section~\ref{subsec:signing}.
@@ -79,7 +81,7 @@ It is described in more detail in the section~\ref{subsec:signing}.
 Garmin requires that the apps are signed to be installed on the watch\cite{garmin-signing}.
 The app has to be signed by the developer with their private key.
 In order for the app to be updated, it has to be signed with the same key.
-When the store has approved the app, it is additionally signed wit the store signature.
+When the store has approved the app, it is additionally signed with the store signature.
 
 The described process enforces that the app can be updated only by the developer having access to the original private key.
 Additionally, when the app is downloaded from the store, the watch can verify that it has been approved by the store.
@@ -187,37 +189,35 @@ When it comes to third-party apps, they can communicate with the phone by using 
 Garmin created SDK for Android and iOS that allows to create a companion mobile app for the watch app.
 They created an example of watch and Android app that communicate with each other\footnote{\url{https://github.com/garmin/connectiq-android-sdk}}.
 The Android SDK uses Broadcasts under the hood to communicate with Garmin Connect app.
-It allows the programmer to query for available Garmin devices connected to the phone.
-Then it is possible to establish communication with the chosen app on the watch.
+The SDK allows the programmer to query for available Garmin devices connected to the phone.
+Then it is possible to establish communication with a chosen app on the watch.
 
 The first thing that can be noticed is that the SDK is able to get a list of all Garmin devices connected to the phone without any permissions.
 They use Broadcasts that are available to all apps.
 This creates a potential privacy issue, as any app can get the information if the user has a Garmin device connected to the phone.
 Moreover, it is possible to get the information about the device, such as the model name.
 
-Another issue is that the communication between the app on the watch and the companion app is not encrypted.
+Another issue is that the communication between the app on the watch and the companion app is not protected or encrypted.
 The SDK offers a function to register a listener for events from the watch app, given the app ID\@.
 However, when looking at the implementation, it is a wrapper around the Broadcasts.
 It is possible to register a listener for all events from all apps.
 This means that any app on the phone can listen to the messages from any watch app.
-I did not find any mention that would warn the developers about this issue.
+I did not find any mention that would warn the developers about this fact.
 
 Following this finding, I decided to test this hypothesis.
 I created a simple watch app that sends a message to the companion app.
 Then, based on the SDK, I created an Android app that listens to all messages from all watch apps.
 When I installed both apps, the Android app was able to receive the messages from the watch app with the information about the origin.
 
-\textbf{TODO: add screenshot of the app}
-
 Having this information, I proceeded to investigate if it might be an issue for existing apps in the store.
 Firstly, I looked into Spotify and Komoot apps.
 Both of them are very popular and have a large number of downloads.
 They have a full version of the app available on the phone and a companion app on the watch.
-However, they do not use the SDK provided by Garmin.
+However, they do not use the mobile SDK provided by Garmin.
 Instead, they connect to their servers directly.
 It might be because it was easier to implement, or because they wanted to have more control over the communication.
 
-Then I tried to find apps that use the SDK provided by Garmin.
+Then I tried to find apps that use the mobile SDK provided by Garmin.
 I found a developer 'r.485' that has published multiple apps in the store with the companion app on the phone.
 However, when I installed the apps, they did not work correctly.
 

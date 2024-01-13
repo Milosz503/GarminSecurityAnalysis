@@ -1,10 +1,27 @@
 \chapter{Conclusion}
 \section{Summary}
+
+The goal of the project was to analyze the security of the Garmin watches and the third-party apps.
+During the analysis, the ecosystem of the Garmin watches was investigated.
+As the Garmin software is proprietary, it was required to reverse-engineer the software in some cases.
+Based on the exploration, different vectors of attack were considered.
+
+TODO: elaborate, add conclusions
+
+
 \section{Future work}
 
+With the limited time and a broad scope of the analysis, it was not possible to cover all the possible attack vectors.
+Additionally, parts of the analysis were not as deep as they could be.
+The following list describes the possible future work that could be done to expand the analysis.
 
 \begin{itemize}
-    \item Investigation into the findings from the fuzzy testing
-    \item Further analysis of the mobile Garmin apps
-    \item Reverse engineering of the firmware/virtual machine
+    \item Investigation into the findings from the fuzzy testing.
+    Analyze the crashes and try to exploit them.
+    Additionally, test if those bugs affect real devices.
+    \item Further analysis of the mobile Garmin apps.
+    Connect IQ store could be analyzed more deeply.
+    Other Garmin apps could be analyzed as well.
+    \item Reverse engineering of the firmware/virtual machine.
+    Performing a static analysis of the firmware or simulator could reveal more findings.
 \end{itemize}

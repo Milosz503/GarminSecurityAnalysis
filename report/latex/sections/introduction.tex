@@ -20,7 +20,7 @@ This means that the data is being sent over a Bluetooth protocol from the watch 
 Additionally, Garmin encourages users to synchronize the data with their cloud.
 
 In case the provided software does not fulfill users' requirements, it is also possible to install third-party apps on the watch.
-Garmin maintains an ecosystem of tools for the developers to create apps and publish them in a Garmin store.
+Garmin maintains an ecosystem of tools for the developers to create apps and publish them in the Garmin store.
 It makes the watch extensible and more universal, but it also allows for a third-party developer to gain access to some of the user data.
 
 The described software offers a powerful toolset for the users to analyse their fitness data.
@@ -33,7 +33,7 @@ In this report, a broad analysis of different attack vectors has been performed.
 
 Overall, during the analysis, the following privacy and security concerns were found:
 \begin{itemize}
-    \item Garmin uses deprecated SHA-1 for app signing
+    \item Garmin uses deprecated SHA-1 for watch third-party app signing
     \item Android apps installed on the phone, without any permissions can detect that the user uses Garmin devices and the type of the device
     \item Communication between the third-party apps and their companion apps are in plain text, available to all apps installed on the Android phone.
     I created a proof of concept app that can eavesdrop on the messages sent to the phone.
@@ -77,7 +77,6 @@ This chapter describes the app runtime, building process and the communication b
 After that, the fuzzing of the third-party apps is described.
 At this stage, a custom fuzzer was created to test the security of the apps.
 It generated promising results, opening additional opportunities for further research.
-Finally, the privacy of the Garmin software is analysed.(TODO: does it exist?)
 
 \section{Testing environment}
 For the analysis the decision was made to use Linux operating systems as it is a popular choice in the system security community and a large number of materials use it.
