@@ -164,6 +164,7 @@ The application is based on an example provided by the SDK, called \textit{Confi
 
 I was running the fuzzer with at most 50 iterations, so that it would be possible to easily reproduce all steps.
 Each run of the fuzzer started with a different seed for a random generator.
+The Oracle was configured to timeout after 15 seconds if the application did not print the expected message.
 
 After the first run, I noticed that sometimes there would be an error message: \textit{Permissions required}.
 Probably some modifications caused the application to access parts of the SDK that it did not have permission to.
@@ -210,4 +211,6 @@ Based on this, it is not possible to assess if the bug is present in the real de
 It would require further investigation into the watch.
 
 Those results show that there are bugs in the simulator, potentially also affecting real devices.
+Even though the fuzzer did not use any code instrumentation, it was able to consistently find an input that crashes the simulator in under 15 minutes.
+It suggests that there might be multiple bugs in the simulator and virtual machine.
 This opens an opportunity to continue the investigation to assess if it is possible to find any vulnerabilities that can be exploited.

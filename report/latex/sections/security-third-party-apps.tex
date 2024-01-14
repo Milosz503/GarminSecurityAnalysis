@@ -5,6 +5,7 @@
 
 The applications are intended to be run on a wide range of devices, with different hardware configurations.
 The execution environment needs to be able to enforce access control and isolation.
+To make it scalable, it is necessary to have an abstraction layer that would allow the apps to be run on different hardware configurations.
 Moreover, the devices are very limited in resources, which makes it difficult to adapt the existing solutions such as Java virtual machine.
 For those reasons, Garmin decided to create a custom virtual machine and a programming language.
 
@@ -15,12 +16,15 @@ It creates a large attack surface, and it is challenging to ensure that the impl
 The existing research analysed the bytecode of the firmware running on the watch.
 Unfortunately, the firmware is no longer available for download.
 There is a chance that it would be possible to reverse engineer the watch hardware and extract the firmware from the device.
-However, it would require an extensive amount of time and resources and is out of scope of this report.
+However, it would require an extensive amount of time and resources.
 Another option would be to investigate the protocol used to download a new firmware version.
 It would require additional time and there is no guarantee that it would be possible to download the full firmware.
+Performing a static analysis of the firmware would be a very time-consuming and tedious process.
+It would require decompiling and analysing the code of the virtual machine, without any documentation, any meaningful names of the variables and functions.
 
 In the end, I decided to perform the analysis on the simulator provided by Garmin.
-As it runs directly on the computer, it is possible to perform a more in-depth analysis of the software such as dynamic analysis.
+As it runs directly on the computer, it is possible to use different approaches such as dynamic analysis.
+This leaves more flexibility and allows for a more in-depth analysis of the software.
 The simulator is supposed to guarantee proper isolation, so escaping the sandbox could be a potential vulnerability being a threat to the computer.
 Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
@@ -31,20 +35,32 @@ Additionally, there is a chance that parts of the code are reused in the firmwar
     \caption{Garmin third-party app manifest}
     \label{fig:garmin-app-manifest}
 \end{figure}
-Third-party apps can interact with the watch by using the API provided by the SDK.
+Third-party apps can interact with the watch by using the API provided by the SDK\@.
 The API is divided into several modules, each of them providing different functionality.
-Some of those functionalities can be considered sensitive, such as GPS location, heart rate, or access to the internet.
+
+Garmin differentiates five different types of apps, e.g.\ watch app, watch face.
+The type determines which modules are available for the app.
+Some functionalities can be considered sensitive, such as GPS location, heart rate, or access to the internet.
 Because of that, Garmin implemented a permission system, where different permissions grant access to different modules.
 The app has to define in the manifest file which permissions it requires, and the user has to accept them before installing the app.
 The manifest file is presented in the figure~\ref{fig:garmin-app-manifest}.
+
 The system offers some granularity, and can give the user a general overview of what the app can do.
-However, some, potentially sensitive modules don't require any permissions.
-For example, the app can access some basic activity data such as heart rate, steps, calories without any permissions.
+However, a few, potentially sensitive modules don't require any permissions.
+For example, the app can access several basic activity metrics such as heart rate, steps, calories without any permissions.
 Moreover, in February 2023, Garmin introduced a new module: Complications.
 It is a publish/subscribe model that allows for the apps to publish different metrics, so that they would be accessible for any watch face.
 While it makes the access to different metrics more flexible and accessible, it also removes the granularity of the permissions.
 Every app can potentially publish very sensitive data, without the user being aware of it.
 Then every watch face can access all this data if it requests \textit{Complications} permission.
+
+Watch faces often require several permissions to be able to display different metrics.
+As watch faces are usually downloaded based on the personal design preferences, users are likely to install some that are not very popular.
+This makes it difficult to build a trust relationship with the developer.
+Which means that the only protection for the user is the permission system and Garmin review process.
+
+Potentially, it would be possible to create an API for watch faces that would not require any permissions.
+The watch face could describe the design, and the watch could be responsible for displaying the metrics.
 
 \section{Building process}
 In order to understand the runtime environment, I started with the analysis of the building process.

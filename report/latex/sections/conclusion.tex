@@ -3,22 +3,48 @@
 
 The goal of the project was to analyze the security of the Garmin watches and the third-party apps.
 During the analysis, the ecosystem of the Garmin watches was investigated.
-As the Garmin software is proprietary, it was required to reverse-engineer the software in some cases.
+As the software is proprietary, it was required to reverse engineer parts of it.
 Based on the exploration, different vectors of attack were considered.
+Leading to finding several concerns that should be addressed or investigated further.
 
-TODO: elaborate, add conclusions
+The permissions system of the third-party apps could be improved.
+The low granularity of the permissions makes it difficult to control what the apps can do.
+Based on my experience, the third-party apps were often low quality, making it difficult to trust them.
+Moreover, the communication between the third-party apps and their companion apps is not secure.
+While it might be argued that it works the way Garmin intended, it is still a privacy concern.
+Those findings show that the third-party apps ecosystem is not as high quality as it could have been.
+It is probably not the highest priority for Garmin.
+Nonetheless, it is still a possible vector of attack and should be addressed with appropriate security measures.
 
+Fuzzy testing of the simulator revealed that there are bugs in the virtual machine.
+Even though there was no instrumentation, as it is usually used in fuzzing, it was still possible to quickly find bugs.
+I was not able to investigate it further, but it is possible that they could be exploited and potentially affect also real devices.
+
+The fact that the Garmin watches are closed source and proprietary makes it difficult to analyze.
+While there is no security bounty program, there is no incentive for the security researchers to analyze and report the vulnerabilities.
+This, however, does not apply to the malicious actors.
+With the growing amount of the data collected by the watches, it makes them an even more attractive target for the attackers.
+
+It is important to notice that competitors, such as Apple, Google, Samsung provide a security bounty program.
+This makes it much more likely that the vulnerabilities will be found and reported.
+In the case of Garmin, we can only hope that they invest enough resources into their security and inside penetration testing.
+
+Overall, while the Garmin watches offer a powerful and unique feature set, it is important to be aware of the possible security and privacy concerns.
+Those are often overlooked by the users until security incidents happen.
+The analysis suggests that the company might not be investing enough resources into the security of their products.
 
 \section{Future work}
 
-With the limited time and a broad scope of the analysis, it was not possible to cover all the possible attack vectors.
-Additionally, parts of the analysis were not as deep as they could be.
+With the limited time and a broad scope of the analysis, it was not possible to cover all possible attack vectors.
+Additionally, several topics were not investigated as deeply as they could have been.
 The following list describes the possible future work that could be done to expand the analysis.
 
 \begin{itemize}
     \item Investigation into the findings from the fuzzy testing.
     Analyze the crashes and try to exploit them.
     Additionally, test if those bugs affect real devices.
+    \item Continue fuzzy testing with more advanced techniques such as instrumentation.
+    Being able to run the firmware in a simulated environment would allow for more advanced dynamic analysis.
     \item Further analysis of the mobile Garmin apps.
     Connect IQ store could be analyzed more deeply.
     Other Garmin apps could be analyzed as well.
