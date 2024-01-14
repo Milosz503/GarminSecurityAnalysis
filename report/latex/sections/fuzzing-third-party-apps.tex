@@ -14,7 +14,7 @@ This, however, does not require any human interaction and can be scaled to run o
 The expected outcome of the fuzzer is a binary file that crashes the virtual machine and can be run on the watch.
 
 Finding vulnerabilities in the simulator is aimed at achieving two potential objectives.
-Firstly, it might be possible to escape the sandbox and for example execute arbitrary code on the host machine.
+Firstly, it might be possible to escape the sandbox and for example, execute arbitrary code on the host machine.
 Secondly, vulnerabilities in the simulator might be present in the real device as well.
 
 \section{Environment setup}
@@ -211,6 +211,6 @@ Based on this, it is not possible to assess if the bug is present in the real de
 It would require further investigation into the watch.
 
 Those results show that there are bugs in the simulator, potentially also affecting real devices.
-Even though the fuzzer did not use any code instrumentation, it was able to consistently find an input that crashes the simulator in under 15 minutes.
+Even though the fuzzer did not use instrumentation, it was able to consistently find an input that crashes the simulator in under 15 minutes.
 It suggests that there might be multiple bugs in the simulator and virtual machine.
 This opens an opportunity to continue the investigation to assess if it is possible to find any vulnerabilities that can be exploited.
