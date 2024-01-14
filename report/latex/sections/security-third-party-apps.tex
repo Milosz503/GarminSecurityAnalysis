@@ -25,7 +25,7 @@ It would require decompiling and analysing the code of the virtual machine, with
 In the end, I decided to perform the analysis on the simulator provided by Garmin.
 As it runs directly on the computer, it is possible to use different approaches such as dynamic analysis.
 This leaves more flexibility and allows for a more in-depth analysis of the software.
-The simulator is supposed to guarantee proper isolation, so escaping the sandbox could be a potential vulnerability being a threat to the computer.
+The simulator is supposed to guarantee proper isolation, so escaping the sandbox could be a potential vulnerability being a threat to the host machine.
 Additionally, there is a chance that parts of the code are reused in the firmware running on the watch and the findings would be applicable to the real device.
 
 \section{Permissions}
@@ -59,7 +59,7 @@ As watch faces are usually downloaded based on the personal design preferences, 
 This makes it difficult to build a trust relationship with the developer.
 Which means that the only protection for the user is the permission system and Garmin review process.
 
-Potentially, it would be possible to create an API for watch faces that would not require any permissions.
+A potential improvement would be to create an API for watch faces that would not require any permissions.
 The watch face could describe the design, and the watch could be responsible for displaying the metrics.
 
 \section{Building process}
@@ -218,7 +218,7 @@ The SDK offers a function to register a listener for events from the watch app, 
 However, when looking at the implementation, it is a wrapper around the Broadcasts.
 It is possible to register a listener for all events from all apps.
 This means that any app on the phone can listen to the messages from any watch app.
-I did not find any mention that would warn the developers about this fact.
+I did not find any mention in the documentation, that would warn the developers about this fact.
 
 Following this finding, I decided to test this hypothesis.
 I created a simple watch app that sends a message to the companion app.
